@@ -1,42 +1,53 @@
 .App {
-padding: 20px;
-text-align: center;
-display: flex;
-justify-content: center;
-flex-wrap: nowrap;
-flex-direction: column;
+  padding: 20px 60px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+  flex-direction: column;
 }
 
 .wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
 .ant-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .ant-row {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    .ant-row{
-        display: flex;
-        justify-content: flex-end;  
-    .ant-form-item-control{
-        flex-grow: 0;
-        &-input{
-            width: 300px;
-        }
-    }
-    }
+    justify-content: flex-end;  
+
+    
+  }
+  // Вложенность выше двух - ругается линтер. Без указания дочерьности - не перекрыть приоритет родного стиля ant
+  .ant-row .ant-form-item-control {
+    flex-grow: 0;
+  }
+
+  .ant-row .ant-form-item-control-input {
+    width: 300px;
+  }
 }
 
 .errorText {
-    text-align: left;
-    font-size: 16px;
-    color: #ff4d4f;
-    list-style-type: circle;
+  text-align: left;
+  font-size: 16px;
+  color: #ff4d4f;
+  list-style-type: circle;
+}
+
+.successText {
+  text-align: center;
+  font-size: 16px;
+  color: darkgreen;
 }
 
 .ant-btn {
-    align-self: flex-end;
+  align-self: flex-end;
 }

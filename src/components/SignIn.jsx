@@ -1,14 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { uniqueId } from 'lodash';
 import { useFormik } from 'formik';
 import {
-  Form, Input, Button, message,
+  Form, Input, Button,
 } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import * as actions from '../actions/index';
 
 const SignIn = (props) => {
+  const { status, resErrors, login } = props;
+
   const history = useHistory();
   const redirectToLogin = () => {
     history.push('/signup');
@@ -39,32 +43,34 @@ const SignIn = (props) => {
       const valsPrepared = {
         user: values,
       };
-      const { login } = props;
       login(valsPrepared);
     },
   });
 
   const msg = () => {
-    const { success, resErrors } = props;
-    if (!props.hasOwnProperty('success')) {
+    if (status === '') {
       return null;
     }
-    if (success) {
+    if (status === 'success') {
       setTimeout(() => {
-        history.push('/')
+        history.push('/');
       }, 2000);
       return (
-        <p>
-          Login in succesfull <br/>
-          {/* If you arent, <a onClick={history.push('/')}>click here</a> */}
+        <p className="successText">
+          Login in succesfull, you will be redirect to index
+          {' '}
+          <br />
+          If you arent,
+          {' '}
+          <Link to="/">click here</Link>
         </p>
       );
     }
     return (
       <ul className="errorText">
-        { Object.entries(resErrors).map(([key, value]) => (
-          <li>
-            {key}
+        { Object.entries(resErrors).map(([errKey, value]) => (
+          <li key={uniqueId()}>
+            {errKey}
             {' '}
             :
             {value}
@@ -78,7 +84,7 @@ const SignIn = (props) => {
     const { errors, touched, handleSubmit } = formik;
     return (
       <div className="wrapper">
-                <Button onClick={redirectToLogin}>
+        <Button onClick={redirectToLogin}>
           Sign Up
         </Button>
         <Form onFinish={handleSubmit}>
@@ -132,24 +138,20 @@ const actionCreators = {
 
 const mapStateToProps = ({ userState }) => {
   const { status } = userState;
-  switch (status) {
-    case 'success': {
-      return {
-        success: true,
-      };
-    }
-    case 'fail': {
-      return {
-        success: false,
-        resErrors: userState.errors,
-      };
-    }
+  if (status === 'fail') return { status, resErrors: userState.errors };
+  return { status };
+};
 
-    default:
-      return {
+SignIn.defaultProps = {
+  status: '',
+  resErrors: {},
+  login: () => {},
+};
 
-      };
-  }
+SignIn.propTypes = {
+  status: PropTypes.string,
+  resErrors: PropTypes.objectOf(PropTypes.any),
+  login: PropTypes.func,
 };
 
 export default connect(mapStateToProps, actionCreators)(SignIn);

@@ -1,15 +1,18 @@
 import React from 'react';
 import { useFormik } from 'formik';
+import { uniqueId } from 'lodash';
 import {
-  Form, Input, Button, message,
+  Form, Input, Button,
 } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
+import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
 
 const SignUp = (props) => {
   const history = useHistory();
+  const { status, resErrors, register } = props;
   const redirectToLogin = () => {
     history.push('/signin');
   };
@@ -45,28 +48,32 @@ const SignUp = (props) => {
       const valsPrepared = {
         user: values,
       };
-      const { register } = props;
+
       register(valsPrepared);
     },
   });
 
   const msg = () => {
-    const { success, resErrors } = props;
-    if (!props.hasOwnProperty('success')) {
+    if (status === '') {
       return null;
     }
-    if (success) {
+    if (status === 'success') {
       return (
-        <p>
-          You have been registered (later here will be redirect to login)
+        <p className="successText">
+          You register in succesfull, you be redirect to sign in page
+          {' '}
+          <br />
+          If you arent,
+          {' '}
+          <Link to="/signin">click here</Link>
         </p>
       );
     }
     return (
       <ul className="errorText">
-        { Object.entries(resErrors).map(([key, value]) => (
-          <li>
-            {key}
+        { Object.entries(resErrors).map(([errKey, value]) => (
+          <li key={uniqueId()}>
+            {errKey}
             {' '}
 
             {value}
@@ -80,10 +87,10 @@ const SignUp = (props) => {
     const { errors, touched, handleSubmit } = formik;
     return (
       <div className="wrapper">
-                <Button onClick={redirectToLogin}>
+        <Button onClick={redirectToLogin}>
           Sign In
         </Button>
-        <Form onFinish={handleSubmit} noStyle>
+        <Form onFinish={handleSubmit}>
           <Form.Item
             label="Name"
             name="username"
@@ -94,7 +101,7 @@ const SignUp = (props) => {
             help={errors.name && touched.name
               ? errors.name
               : null}
-              
+
           >
 
             <Input onBlur={formik.handleBlur} onChange={formik.handleChange} />
@@ -150,24 +157,20 @@ const actionCreators = {
 
 const mapStateToProps = ({ signUpState }) => {
   const { status } = signUpState;
-  switch (status) {
-    case 'success': {
-      return {
-        success: true,
-      };
-    }
-    case 'fail': {
-      return {
-        success: false,
-        resErrors: signUpState.errors,
-      };
-    }
+  if (status === 'fail') return { status, resErrors: signUpState.errors };
+  return { status };
+};
 
-    default:
-      return {
+SignUp.defaultProps = {
+  status: '',
+  resErrors: {},
+  register: () => {},
+};
 
-      };
-  }
+SignUp.propTypes = {
+  status: PropTypes.string,
+  resErrors: PropTypes.objectOf(PropTypes.any),
+  register: PropTypes.func,
 };
 
 export default connect(mapStateToProps, actionCreators)(SignUp);
