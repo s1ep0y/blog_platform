@@ -54,7 +54,7 @@ const SignIn = (props) => {
     if (status === 'success') {
       setTimeout(() => {
         history.push('/');
-      }, 2000);
+      }, 3000);
       return (
         <p className="successText">
           Login in succesfull, you will be redirect to index

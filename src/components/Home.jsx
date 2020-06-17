@@ -13,7 +13,7 @@ const Home = (props) => {
   const { login, user, logOut } = props;
 
   useEffect(() => {
-    if (!login) history.push('/signin');
+    if (!login) history.push('/login');
   });
   return (
     <div className="wrapper">

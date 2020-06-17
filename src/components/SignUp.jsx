@@ -14,7 +14,7 @@ const SignUp = (props) => {
   const history = useHistory();
   const { status, resErrors, register } = props;
   const redirectToLogin = () => {
-    history.push('/signin');
+    history.push('/login');
   };
 
   const valShema = Yup
@@ -65,7 +65,7 @@ const SignUp = (props) => {
           <br />
           If you arent,
           {' '}
-          <Link to="/signin">click here</Link>
+          <Link to="/login">click here</Link>
         </p>
       );
     }
