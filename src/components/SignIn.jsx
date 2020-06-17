@@ -50,14 +50,18 @@ const SignIn = (props) => {
       return null;
     }
     if (success) {
+      setTimeout(() => {
+        history.push('/')
+      }, 2000);
       return (
         <p>
-          Login in succesfull (later here will be redirect to index)
+          Login in succesfull <br/>
+          {/* If you arent, <a onClick={history.push('/')}>click here</a> */}
         </p>
       );
     }
     return (
-      <ul>
+      <ul className="errorText">
         { Object.entries(resErrors).map(([key, value]) => (
           <li>
             {key}
@@ -73,7 +77,10 @@ const SignIn = (props) => {
   const loginForm = () => {
     const { errors, touched, handleSubmit } = formik;
     return (
-      <div>
+      <div className="wrapper">
+                <Button onClick={redirectToLogin}>
+          Sign Up
+        </Button>
         <Form onFinish={handleSubmit}>
 
           <Form.Item
@@ -103,17 +110,12 @@ const SignIn = (props) => {
           >
             <Input.Password onBlur={formik.handleBlur} onChange={formik.handleChange} />
           </Form.Item>
-
-
           <Form.Item>
             <Button type="primary" htmlType="submit">
               Login
             </Button>
           </Form.Item>
         </Form>
-        <Button onClick={redirectToLogin}>
-          Sign Up
-        </Button>
         {msg()}
       </div>
     );
@@ -128,8 +130,8 @@ const actionCreators = {
   login: actions.signIn,
 };
 
-const mapStateToProps = ({ signInState }) => {
-  const { status } = signInState;
+const mapStateToProps = ({ userState }) => {
+  const { status } = userState;
   switch (status) {
     case 'success': {
       return {
@@ -139,7 +141,7 @@ const mapStateToProps = ({ signInState }) => {
     case 'fail': {
       return {
         success: false,
-        resErrors: signInState.errors,
+        resErrors: userState.errors,
       };
     }
 

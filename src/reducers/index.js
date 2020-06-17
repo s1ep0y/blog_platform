@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
 import * as actions from '../actions';
+import { act } from 'react-dom/test-utils';
 
 const SignInFetchingState = handleActions({
   [actions.signInRequest]() {
@@ -26,7 +27,7 @@ const SignUpFetchingState = handleActions({
   },
 }, 'none');
 
-const signInState = handleActions({
+const userState = handleActions({
   [actions.signInSuccess](state, { payload }) {
     console.log(payload);
     return { status: 'success', errors: {}, user: payload.user };
@@ -34,8 +35,10 @@ const signInState = handleActions({
   [actions.signInFailure](state, { payload }) {
     return { status: 'fail', errors: payload, user: {} };
   },
+  [actions.logOut](state, { payload }) {
+    return { status: '', errors: {}, user: {} }
+  },
 }, { status: '', errors: {}, user: {} });
-
 
 const signUpState = handleActions({
   [actions.signUpSuccess](state, { payload }) {
@@ -51,6 +54,6 @@ const signUpState = handleActions({
 export default combineReducers({
   SignInFetchingState,
   SignUpFetchingState,
-  signInState,
+  userState,
   signUpState,
 });

@@ -63,7 +63,7 @@ const SignUp = (props) => {
       );
     }
     return (
-      <ul>
+      <ul className="errorText">
         { Object.entries(resErrors).map(([key, value]) => (
           <li>
             {key}
@@ -79,8 +79,11 @@ const SignUp = (props) => {
   const signUpForm = () => {
     const { errors, touched, handleSubmit } = formik;
     return (
-      <div>
-        <Form onFinish={handleSubmit}>
+      <div className="wrapper">
+                <Button onClick={redirectToLogin}>
+          Sign In
+        </Button>
+        <Form onFinish={handleSubmit} noStyle>
           <Form.Item
             label="Name"
             name="username"
@@ -91,6 +94,7 @@ const SignUp = (props) => {
             help={errors.name && touched.name
               ? errors.name
               : null}
+              
           >
 
             <Input onBlur={formik.handleBlur} onChange={formik.handleChange} />
@@ -128,9 +132,7 @@ const SignUp = (props) => {
             </Button>
           </Form.Item>
         </Form>
-        <Button onClick={redirectToLogin}>
-          Sign In
-        </Button>
+
         {msg()}
       </div>
     );

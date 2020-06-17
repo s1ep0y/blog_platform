@@ -1,0 +1,42 @@
+.App {
+padding: 20px;
+text-align: center;
+display: flex;
+justify-content: center;
+flex-wrap: nowrap;
+flex-direction: column;
+}
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.ant-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    .ant-row{
+        display: flex;
+        justify-content: flex-end;  
+    .ant-form-item-control{
+        flex-grow: 0;
+        &-input{
+            width: 300px;
+        }
+    }
+    }
+}
+
+.errorText {
+    text-align: left;
+    font-size: 16px;
+    color: #ff4d4f;
+    list-style-type: circle;
+}
+
+.ant-btn {
+    align-self: flex-end;
+}
