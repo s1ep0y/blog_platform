@@ -7,6 +7,8 @@ import thunk from 'redux-thunk';
 import reducers from './reducers/index.js'
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
+import * as actions from './actions';
+import { act } from 'react-dom/test-utils';
 
 /* eslint-disable no-underscore-dangle */
 const ext = window.__REDUX_DEVTOOLS_EXTENSION__;
@@ -21,7 +23,11 @@ const store = createStore(
   ),
 );
 
+const user = localStorage.getItem('user')
 
+store.dispatch(actions.fetchArticles())
+
+if(user) store.dispatch(actions.userLoggedIn(user));
 
 ReactDOM.render(
   // <React.StrictMode>

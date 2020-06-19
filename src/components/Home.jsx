@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { uniqueId } from 'lodash';
 import {
   Button,
 } from 'antd';
@@ -6,49 +7,67 @@ import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
+import ArticleListItem from './ArticleListItem'
 
 const Home = (props) => {
   const history = useHistory();
 
-  const { login, user, logOut } = props;
+  const { logOut, fetchArticles, articles, allCount, loadedCount } = props;
+  
 
-  useEffect(() => {
-    if (!login) history.push('/login');
-  });
+  const addArticle = () => history.push('/addarticle');
+    console.log(articles)
+  const articlesPrepared = articles.map((item) => (
+  <ArticleListItem 
+    key = {uniqueId()}
+    title={item.title}
+    author={item.author.username}
+    date={item.createdAt}
+    tags={item.tagList}
+    likes={item.favoritesCount}
+    likeByUser={item.favorited}
+  />))
+  console.log(articlesPrepared)
+
+  
   return (
     <div className="wrapper">
       <Button onClick={logOut}>
         Sign Out
       </Button>
-      <p>
-        Name:
-        {' '}
-        {user.username}
-      </p>
+      <Button onClick={addArticle}>
+        Add Article
+      </Button>
+      {articlesPrepared}
     </div>
   );
 };
 
 const actionCreators = {
   logOut: actions.logOut,
+  fetchArticles: actions.fetchArticles,
 };
 
-const mapStateToProps = ({ userState }) => {
-  const { status, user } = userState;
-  if (status === 'success') return { user, login: true };
-  return ({ login: false, user: {} });
+const mapStateToProps = ({ articlesList }) => {
+  const { articles, allCount, loadedCount } = articlesList;
+  return {
+    articles, allCount, loadedCount
+  }
 };
 
 Home.defaultProps = {
   login: false,
-  user: {},
+  articles: [],
+  allCount: 0,
+  loadedCount: 0,
   logOut: () => {},
+  fetchArticles: () => {},
 };
 
 Home.propTypes = {
-  login: PropTypes.bool,
-  user: PropTypes.objectOf(PropTypes.any),
+  articles: PropTypes.array, allCount: PropTypes.number, loadedCount: PropTypes.number,
   logOut: PropTypes.func,
+  fetchArticles: PropTypes.func,
 };
 
 export default connect(mapStateToProps, actionCreators)(Home);

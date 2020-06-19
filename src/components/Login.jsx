@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import { uniqueId } from 'lodash';
 import { useFormik } from 'formik';
@@ -12,11 +12,11 @@ import * as actions from '../actions/index';
 
 const SignIn = (props) => {
   const { status, resErrors, login } = props;
-
   const history = useHistory();
   const redirectToLogin = () => {
     history.push('/signup');
   };
+
 
   const valShema = Yup
     .object()

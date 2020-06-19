@@ -8,6 +8,7 @@ import { BrowserRouter as Router,   Switch,
 import Home from './components/Home'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
+import AddArticle from './components/AddArticle'
 
 function App() {
   return (
@@ -19,14 +20,17 @@ function App() {
             <Route path="/Login">
               <Login />
             </Route>
-
+            <Route path="/addarticle">
+              <AddArticle />
+            </Route>
             <Route path="/signup">
               <SignUp />
             </Route>
+
             <Route path="/">
               <Home />
             </Route>
-            
+
           </Switch>
 
         </div>
