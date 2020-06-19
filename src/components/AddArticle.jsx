@@ -51,7 +51,7 @@ const AddArticle = (props) => {
           return currentValue.includes('tag') ? { ...acc, tagList: [...acc.tagList, elem] }
             : { ...acc, [currentValue]: elem };
         }
-        return { ...acc, tagList: [] };
+        return { ...acc };
       },
       { tagList: [] });
       postArticle({

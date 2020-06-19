@@ -26,11 +26,11 @@ export const postArticle = ({ article, token }) => async (dispatch) => {
   dispatch(postArticleRequest());
   try {
     const {data} = await axios.post(apiRoutes.articles(),
-    article,
+    {article: { ...article, tagList: article.tagList}},
     {headers: {Authorization: `Token ${token}`}},
     )
-    console.log(article)
-    console.log(data.article)
+    console.log(article.tagList)
+    console.log(data)
     dispatch(postArticleSuccess());
   } catch ({ response }) {
     console.log(response)

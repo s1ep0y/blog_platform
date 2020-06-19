@@ -14,16 +14,14 @@ const ArticleListItem = (props) => {
         <Card title={title}>
             <p>{author}</p>
             <p>{date}</p>
-            
-            {/* {
-                tags.map((text) => {
-                    <Tag key={uniqueId}>
-                        {text}
-                    </Tag>
-                })
-            } */}
-            
             <p>{likes}</p>
+            {
+                tags.map((text) =>
+                    (<Tag key={uniqueId()}>
+                        {text}
+                    </Tag>)
+                )
+            }
         </Card>
         </div>
         // <p>123</p>

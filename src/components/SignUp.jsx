@@ -101,7 +101,6 @@ const SignUp = (props) => {
             help={errors.name && touched.name
               ? errors.name
               : null}
-
           >
 
             <Input onBlur={formik.handleBlur} onChange={formik.handleChange} />

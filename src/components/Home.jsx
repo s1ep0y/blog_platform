@@ -3,10 +3,11 @@ import { uniqueId } from 'lodash';
 import {
   Button,
 } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link, BrowserRouter as Router } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
+import apiRoutes from '../routes/apiRoutes'
 import ArticleListItem from './ArticleListItem'
 
 const Home = (props) => {
@@ -18,15 +19,17 @@ const Home = (props) => {
   const addArticle = () => history.push('/addarticle');
     console.log(articles)
   const articlesPrepared = articles.map((item) => (
-  <ArticleListItem 
-    key = {uniqueId()}
-    title={item.title}
-    author={item.author.username}
-    date={item.createdAt}
-    tags={item.tagList}
-    likes={item.favoritesCount}
-    likeByUser={item.favorited}
-  />))
+  <Link to={'/articles/' + item.slug} key = {uniqueId()}>
+    <ArticleListItem 
+      title={item.title}
+      author={item.author.username}
+      date={item.createdAt}
+      tags={item.tagList}
+      likes={item.favoritesCount}
+      likeByUser={item.favorited}
+    />
+  </Link>
+  ))
   console.log(articlesPrepared)
 
   
