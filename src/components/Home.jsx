@@ -1,23 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { uniqueId } from 'lodash';
 import {
   Button,
 } from 'antd';
-import { useHistory, Link, BrowserRouter as Router } from 'react-router-dom';
+import { useHistory, Link} from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
-import apiRoutes from '../routes/apiRoutes'
 import ArticleListItem from './ArticleListItem'
 
+
 const Home = (props) => {
+  const [loaded, setLoaded] = useState(false)
   const history = useHistory();
 
-  const { logOut, fetchArticles, articles, allCount, loadedCount } = props;
+  const { logOut, articles, allCount, loadedCount, login ,user, FavoriteControl, fetchArticles } = props;
+  console.log(loaded)
+  if (!loaded) {
+    login ? fetchArticles({ favorited: user.username} ) : fetchArticles()
+    setLoaded(true)
+  }
   
 
+  const likeControl = (...params) => (e) => {
+    e.preventDefault();
+    if(!login) {
+      alert('need to loign')
+      return;
+    }
+    FavoriteControl([...params, user.token])
+  }
   const addArticle = () => history.push('/addarticle');
-    console.log(articles)
   const articlesPrepared = articles.map((item) => (
   <Link to={'/articles/' + item.slug} key = {uniqueId()}>
     <ArticleListItem 
@@ -27,10 +40,11 @@ const Home = (props) => {
       tags={item.tagList}
       likes={item.favoritesCount}
       likeByUser={item.favorited}
+      likeControl={likeControl(item.slug, item.favorited)}
     />
   </Link>
   ))
-  console.log(articlesPrepared)
+
 
   
   return (
@@ -49,10 +63,13 @@ const Home = (props) => {
 const actionCreators = {
   logOut: actions.logOut,
   fetchArticles: actions.fetchArticles,
+  FavoriteControl: actions.FavoriteControl,
 };
 
-const mapStateToProps = ({ articlesList }) => {
+const mapStateToProps = ({ articlesList, userState }) => {
   const { articles, allCount, loadedCount } = articlesList;
+  const { status, user } = userState;
+  if (status === 'success') return { user, login: true, articles, allCount, loadedCount };
   return {
     articles, allCount, loadedCount
   }
@@ -65,12 +82,14 @@ Home.defaultProps = {
   loadedCount: 0,
   logOut: () => {},
   fetchArticles: () => {},
+  FavoriteControl: () => {},
 };
 
 Home.propTypes = {
   articles: PropTypes.array, allCount: PropTypes.number, loadedCount: PropTypes.number,
   logOut: PropTypes.func,
   fetchArticles: PropTypes.func,
+  FavoriteControl: PropTypes.func,
 };
 
 export default connect(mapStateToProps, actionCreators)(Home);

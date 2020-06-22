@@ -100,8 +100,20 @@ const articlesList = handleActions({
       ...state,
       errors: payload
     }
+  },
+  [actions.FavoriteControlSuccess](state, {payload}) {
+    const { articles } = state;
+    const index = articles.findIndex((item => item.slug === payload.slug))
+    console.log(articles[index])
+    articles[index] = payload;
+    console.log(articles[index])
+    return {
+      articles, ...state
+    }
   }
 }, {articles: [], loadedCount: 0, allCount: 0, errors: {}})
+
+
 
 export default combineReducers({
   SignInFetchingState,

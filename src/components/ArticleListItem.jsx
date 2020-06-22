@@ -18,16 +18,19 @@ const dateDistance = (date) => {
     { format: ['days', 'hours', 'minutes']}, { delimiter: '/'})
 } 
 
+const test = () => {
+    console.log('всплыте')
+}
+
 const ArticleListItem = (props) => {
-    const { title, author, date, tags, likes, likeByUser} = props;
+    const { title, author, date, tags, likes, likeByUser, likeControl} = props;
     dateDistance(date)
-    console.log(tags)
     return(
         <div>
         <Card title={title}>
             <p>{author}</p>
             <p>Posted {dateDistance(date)} ago</p>
-            <p>{likes}</p>
+            <Button onClick={likeControl}>{likes}</Button>
             {
                 tags.map((text) =>
                     (<Tag key={uniqueId()}>
@@ -39,6 +42,20 @@ const ArticleListItem = (props) => {
         </div>
         // <p>123</p>
     )
+}
+
+ArticleListItem.defaulProps = {
+    title: '', author: '', date: '', tags: [], likes: 0, likeByUser: false, likeControl: () => {}
+}
+
+ArticleListItem.propTypes = {
+    likeControl: PropTypes.func,
+    title: PropTypes.string,
+    author: PropTypes.string,
+    date: PropTypes.string,
+    tags: PropTypes.array,
+    likes: PropTypes.number,
+    likeByUser: PropTypes.bool,
 }
 
 export default ArticleListItem

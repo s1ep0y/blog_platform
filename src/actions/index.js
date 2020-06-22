@@ -20,27 +20,52 @@ export const fetchArticlesListRequest = createAction('FETCH_ARTICLES_LIST_REQUES
 export const fetchArticlesListSuccess = createAction('FETCH_ARTICLES_LIST_SUCCESS');
 export const fetchArticlesListFailure = createAction('FETCH_ARTICLES_LIST_FAILURE');
 
+export const FavoriteControlRequest = createAction('FAVORITE_CONTROL_REQUEST');
+export const FavoriteControlSuccess = createAction('FAVORITE_CONTROL_SUCCESS');
+export const FavoriteControlFailure = createAction('FAVORITE_CONTROL_FAILURE');
+
 export const logOut = createAction('LOG_OUT');
+
+export const FavoriteControl = (params) => async (dispatch) => {
+  const [slug, favorited, token] = params;
+  dispatch(FavoriteControlRequest())
+  try {
+    if(favorited) {
+      const {data} = await axios.delete(apiRoutes.favArticle(slug), {}, {headers: {Authorization: `Token ${token}`}},)
+      dispatch(FavoriteControlSuccess(data.article))
+      return;
+    }
+    const {data} = await axios.post(apiRoutes.favArticle(slug), {}, {headers: {Authorization: `Token ${token}`}},)
+    dispatch(FavoriteControlSuccess(data.article))
+    return;
+  } catch ({ response }) {
+    console.log(response.data.errors)
+  }
+}
 
 export const postArticle = ({ article, token }) => async (dispatch) => {
   dispatch(postArticleRequest());
   try {
-    const {data} = await axios.post(apiRoutes.articles(),
+    const { data } = await axios.post(apiRoutes.articles(),
     {article: { ...article, tagList: article.tagList}},
     {headers: {Authorization: `Token ${token}`}},
     )
-    console.log(article.tagList)
     console.log(data)
     dispatch(postArticleSuccess());
   } catch ({ response }) {
+    dispatch(postArticleFailure(response.data.errors));
     console.log(response)
   }
 }
 
-export const fetchArticles = () => async (dispatch) =>{
+export const fetchArticles = ( params = {}) => async (dispatch) =>{
   dispatch(fetchArticlesListRequest());
+  const queries = params.length !== 0 
+    ? '?' + Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
+    : []
   try {
-    const { data } = await axios.get(apiRoutes.articles())
+    console.log(apiRoutes.articles(queries))
+    const { data } = await axios.get(apiRoutes.articles(queries))
     dispatch(fetchArticlesListSuccess(data))
   } catch ({ response }) {
     console.log(response)
