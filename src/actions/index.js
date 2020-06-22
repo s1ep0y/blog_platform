@@ -31,7 +31,8 @@ export const FavoriteControl = (params) => async (dispatch) => {
   dispatch(FavoriteControlRequest())
   try {
     if(favorited) {
-      const {data} = await axios.delete(apiRoutes.favArticle(slug), {}, {headers: {Authorization: `Token ${token}`}},)
+      const {data} = await axios.delete(apiRoutes.favArticle(slug), {},
+      {headers: {Authorization: `Token ${token}`}},)
       dispatch(FavoriteControlSuccess(data.article))
       return;
     }
@@ -58,15 +59,25 @@ export const postArticle = ({ article, token }) => async (dispatch) => {
   }
 }
 
-export const fetchArticles = ( params = {}) => async (dispatch) =>{
+export const fetchArticles = ( params = {}, user = null) => async (dispatch) =>{
   dispatch(fetchArticlesListRequest());
   const queries = params.length !== 0 
     ? '?' + Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
     : []
   try {
     console.log(apiRoutes.articles(queries))
-    const { data } = await axios.get(apiRoutes.articles(queries))
-    dispatch(fetchArticlesListSuccess(data))
+    const { data } = await axios.get(apiRoutes.articles( queries ));
+    if (user) {
+      const likedArticles = await axios.get(apiRoutes.articles('?favorited='+user))
+      const likeSlugs = likedArticles.data.articles.map((obj) => obj.slug)
+      const prepared = data.articles.map((obj) => likeSlugs.includes(obj.slug)
+      ? {...obj, favorited: true}
+      : {...obj}
+      )
+      dispatch(fetchArticlesListSuccess({ articles: prepared, articlesCount: data.articlesCount}))
+      return;
+    }
+    // dispatch(fetchArticlesListSuccess(data))
   } catch ({ response }) {
     console.log(response)
     dispatch(fetchArticlesListFailure(response.data.errors))

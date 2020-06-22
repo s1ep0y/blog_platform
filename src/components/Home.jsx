@@ -17,7 +17,7 @@ const Home = (props) => {
   const { logOut, articles, allCount, loadedCount, login ,user, FavoriteControl, fetchArticles } = props;
   console.log(loaded)
   if (!loaded) {
-    login ? fetchArticles({ favorited: user.username} ) : fetchArticles()
+    fetchArticles({}, user.username)
     setLoaded(true)
   }
   
