@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
-import * as actions from '../actions';
 import { act } from 'react-dom/test-utils';
+import * as actions from '../actions';
 
 const SignInFetchingState = handleActions({
   [actions.signInRequest]() {
@@ -53,14 +53,15 @@ const fetchArticlesListFetchingState = handleActions({
 
 const userState = handleActions({
   [actions.signInSuccess](state, { payload }) {
-    localStorage.setItem('user', JSON.stringify(payload.user))
+    localStorage.setItem('user', JSON.stringify(payload.user));
     return { status: 'success', errors: {}, user: payload.user };
   },
   [actions.signInFailure](state, { payload }) {
     return { status: 'fail', errors: payload, user: {} };
   },
-  [actions.logOut]() {
-    localStorage.removeItem('user')
+  [actions.LogOut]() {
+    console.log('lol')
+    localStorage.removeItem('user');
     return { status: '', errors: {}, user: {} };
   },
   [actions.userLoggedIn](state, { payload }) {
@@ -78,41 +79,40 @@ const signUpState = handleActions({
 }, { status: '', errors: {}, user: {} });
 
 const articleState = handleActions({
-  [actions.postArticleSuccess](){
-    return { status: 'success', errors: {}};
+  [actions.postArticleSuccess]() {
+    return { status: 'success', errors: {} };
   },
-  [actions.postArticleFailure](state, {payload}){
-    return {status: 'error', errors: {errors: payload}}
+  [actions.postArticleFailure](state, { payload }) {
+    return { status: 'error', errors: { errors: payload } };
   },
-}, { status: 'success', errors: {}})
+}, { status: 'success', errors: {} });
 
 const articlesList = handleActions({
-  [actions.fetchArticlesListSuccess](state, { payload }){
-    const newArticles = payload.articles
+  [actions.fetchArticlesListSuccess](state, { payload }) {
+    const newArticles = payload.articles;
     return {
       articles: [...state.articles, ...newArticles],
       loadedCount: state.loadedCount + newArticles.length,
       allCount: payload.articlesCount,
     };
   },
-  [actions.fetchArticlesListFailure](state, { payload }){
+  [actions.fetchArticlesListFailure](state, { payload }) {
     return {
       ...state,
-      errors: payload
-    }
+      errors: payload,
+    };
   },
-  [actions.FavoriteControlSuccess](state, {payload}) {
+  [actions.FavoriteControlSuccess](state, { payload }) {
     const { articles } = state;
-    const index = articles.findIndex((item => item.slug === payload.slug))
-    console.log(articles[index])
+    const index = articles.findIndex(((item) => item.slug === payload.slug));
     articles[index] = payload;
-    console.log(articles[index])
     return {
-      ...state, articles: [...articles, articles[index] = payload ]
-    }
-  }
-}, {articles: [], loadedCount: 0, allCount: 0, errors: {}})
-
+      ...state, articles: [...articles, articles[index] = payload],
+    };
+  },
+}, {
+  articles: [], loadedCount: 0, allCount: 0, errors: {},
+});
 
 
 export default combineReducers({

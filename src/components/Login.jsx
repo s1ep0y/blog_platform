@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { uniqueId } from 'lodash';
 import { useFormik } from 'formik';
@@ -84,9 +84,6 @@ const SignIn = (props) => {
     const { errors, touched, handleSubmit } = formik;
     return (
       <div className="wrapper">
-        <Button onClick={redirectToLogin}>
-          Sign Up
-        </Button>
         <Form onFinish={handleSubmit}>
 
           <Form.Item

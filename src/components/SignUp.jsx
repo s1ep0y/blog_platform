@@ -87,9 +87,6 @@ const SignUp = (props) => {
     const { errors, touched, handleSubmit } = formik;
     return (
       <div className="wrapper">
-        <Button onClick={redirectToLogin}>
-          Sign In
-        </Button>
         <Form onFinish={handleSubmit}>
           <Form.Item
             label="Name"

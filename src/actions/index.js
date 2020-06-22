@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { createAction } from 'redux-actions';
-import apiRoutes from '../routes/apiRoutes'
+import apiRoutes from '../routes/apiRoutes';
 
 export const signInRequest = createAction('SIGN_IN_REQUEST');
 export const signInSuccess = createAction('SIGN_IN_SUCCESS');
 export const signInFailure = createAction('SIGN_IN_FAILURE');
 
-export const userLoggedIn = createAction('USER_LOGGED_IN')
+export const userLoggedIn = createAction('USER_LOGGED_IN');
 
 export const signUpRequest = createAction('SIGN_UP_REQUEST');
 export const signUpSuccess = createAction('SIGN_UP_SUCCESS');
@@ -24,74 +24,72 @@ export const FavoriteControlRequest = createAction('FAVORITE_CONTROL_REQUEST');
 export const FavoriteControlSuccess = createAction('FAVORITE_CONTROL_SUCCESS');
 export const FavoriteControlFailure = createAction('FAVORITE_CONTROL_FAILURE');
 
-export const logOut = createAction('LOG_OUT');
+export const LogOut = createAction('LOG_OUT');
+
 
 export const FavoriteControl = (params) => async (dispatch) => {
   const [slug, favorited, token] = params;
-  dispatch(FavoriteControlRequest())
-  console.log(token)
+  dispatch(FavoriteControlRequest());
+  console.log(token);
   try {
-    if(favorited) {
-      console.log('unlike')
-      const {data} = await axios.delete(apiRoutes.favArticle(slug), {
-        headers: {Authorization: `Token ${token}`},
-        // data: {}
-      },)
-      dispatch(FavoriteControlSuccess(data.article))
+    if (favorited) {
+      console.log('unlike');
+      const { data } = await axios.delete(apiRoutes.favArticle(slug), {
+        headers: { Authorization: `Token ${token}` },
+      });
+      dispatch(FavoriteControlSuccess(data.article));
       return;
     }
-    const {data} = await axios.post(apiRoutes.favArticle(slug), {}, {headers: {Authorization: `Token ${token}`}, data: {}},)
-    dispatch(FavoriteControlSuccess(data.article))
+    const { data } = await axios.post(apiRoutes.favArticle(slug), {}, { headers: { Authorization: `Token ${token}` }, data: {} });
+    dispatch(FavoriteControlSuccess(data.article));
     return;
   } catch (e) {
-    console.log(e)
+    console.log(e);
   }
-}
+};
 
 export const postArticle = ({ article, token }) => async (dispatch) => {
   dispatch(postArticleRequest());
   try {
     const { data } = await axios.post(apiRoutes.articles(),
-    {article: { ...article, tagList: article.tagList}},
-    {headers: {Authorization: `Token ${token}`}},
-    )
-    console.log(data)
+      { article: { ...article, tagList: article.tagList } },
+      { headers: { Authorization: `Token ${token}` } });
+    console.log(data);
     dispatch(postArticleSuccess());
   } catch ({ response }) {
     dispatch(postArticleFailure(response.data.errors));
-    console.log(response)
+    console.log(response);
   }
-}
+};
 
-export const fetchArticles = ( params = {}, user = null) => async (dispatch) =>{
+export const fetchArticles = (params = {}, user = null) => async (dispatch) => {
   dispatch(fetchArticlesListRequest());
-  const queries = params.length !== 0 
-    ? '?' + Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
-    : []
+  const queries = params.length !== 0
+    ? Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
+    : [];
   try {
-    console.log(apiRoutes.articles(queries))
-    const { data } = await axios.get(apiRoutes.articles( queries ));
+    console.log(user)
+    const { data } = await axios.get(apiRoutes.articles(`?${queries}`));
     if (user) {
-      const likedArticles = await axios.get(apiRoutes.articles('?favorited='+user))
-      const likeSlugs = likedArticles.data.articles.map((obj) => obj.slug)
-      const prepared = data.articles.map((obj) => likeSlugs.includes(obj.slug)
-      ? {...obj, favorited: true}
-      : obj
-      )
-      dispatch(fetchArticlesListSuccess({ articles: prepared, articlesCount: data.articlesCount}))
+      const likedArticles = await axios.get(apiRoutes.articles(`?favorited=${user}&${queries}`));
+      const likeSlugs = likedArticles.data.articles.map((obj) => obj.slug);
+      const prepared = data.articles.map((obj) => (likeSlugs.includes(obj.slug)
+        ? { ...obj, favorited: true }
+        : obj));
+      dispatch(fetchArticlesListSuccess({ articles: prepared, articlesCount: data.articlesCount }));
       return;
     }
-    // dispatch(fetchArticlesListSuccess(data))
+    dispatch(fetchArticlesListSuccess(data))
   } catch ({ response }) {
-    console.log(response)
-    dispatch(fetchArticlesListFailure(response.data.errors))
+    console.log(response);
+    dispatch(fetchArticlesListFailure(response.data.errors));
   }
-}
+};
 
 export const signIn = (vals) => async (dispatch) => {
   dispatch(signInRequest());
   try {
-    const  { data }  = await axios.post(apiRoutes.login(), vals);
+    const { data } = await axios.post(apiRoutes.login(), vals);
     dispatch(signInSuccess(data));
   } catch ({ response }) {
     dispatch(signInFailure(response.data.errors));
@@ -102,7 +100,7 @@ export const signUp = (vals) => async (dispatch) => {
   dispatch(signUpRequest());
   try {
     const { data } = await axios.post(apiRoutes.users(), vals);
-    console.log(data)
+    console.log(data);
     dispatch(signUpSuccess(data));
   } catch ({ response }) {
     dispatch(signUpFailure(response.data.errors));

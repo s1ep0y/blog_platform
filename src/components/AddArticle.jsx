@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import {
@@ -10,9 +10,6 @@ import * as Yup from 'yup';
 import * as actions from '../actions/index';
 
 const AddArticle = (props) => {
-
-  
-
   const { postArticle, login, user } = props;
   const history = useHistory();
   useEffect(() => {
@@ -31,7 +28,7 @@ const AddArticle = (props) => {
         .required('description is required'),
       body: Yup
         .string()
-        .required('Please enter text of article')
+        .required('Please enter text of article'),
     });
 
   const formik = useFormik({
@@ -56,17 +53,16 @@ const AddArticle = (props) => {
       { tagList: [] });
       postArticle({
         article: noEmpty,
-        token: user.token
+        token: user.token,
       });
-      return;
     },
 
-  })
+  });
 
-  return(
+  return (
     <div className="wrapper">
       <Form
-      onFinish={formik.handleSubmit}
+        onFinish={formik.handleSubmit}
       >
         <Form.Item
           name="title"
@@ -87,7 +83,7 @@ const AddArticle = (props) => {
           label="Description"
           className="required"
 
-                  validateStatus={formik.errors.description && formik.touched.description
+          validateStatus={formik.errors.description && formik.touched.description
             ? 'error'
             : 'success'}
           help={formik.errors.description && formik.touched.description
@@ -102,11 +98,11 @@ const AddArticle = (props) => {
           label="Article text"
           className="requred"
           validateStatus={formik.errors.body && formik.touched.body
-    ? 'error'
-    : 'success'}
-      help={formik.errors.body && formik.touched.body
-        ? formik.errors.body
-        : null}
+            ? 'error'
+            : 'success'}
+          help={formik.errors.body && formik.touched.body
+            ? formik.errors.body
+            : null}
         >
           <Input.TextArea onChange={formik.handleChange} onBlur={formik.handleBlur} />
         </Form.Item>
@@ -158,15 +154,15 @@ const AddArticle = (props) => {
 
         </Form.Item>
         <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Add Article
-            </Button>
-          </Form.Item>
-        </Form>
-        {/* {msg()} */}
+          <Button type="primary" htmlType="submit">
+            Add Article
+          </Button>
+        </Form.Item>
+      </Form>
+      {/* {msg()} */}
     </div>
-  )
-}
+  );
+};
 
 const actionCreators = {
   postArticle: actions.postArticle,

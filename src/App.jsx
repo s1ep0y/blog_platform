@@ -7,6 +7,7 @@ import { BrowserRouter as Router,   Switch,
   Route,
   } from 'react-router-dom';
 import Home from './components/Home'
+import Header from './components/Header'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 import AddArticle from './components/AddArticle'
@@ -15,8 +16,9 @@ import { connect } from 'react-redux';
 function App(props) {
   return (
     <div className="App">
-    
+      
       <Router>
+      <Header />
         <div>
           <Switch>
             <Route path="/Login">
