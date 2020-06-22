@@ -29,18 +29,22 @@ export const logOut = createAction('LOG_OUT');
 export const FavoriteControl = (params) => async (dispatch) => {
   const [slug, favorited, token] = params;
   dispatch(FavoriteControlRequest())
+  console.log(token)
   try {
     if(favorited) {
-      const {data} = await axios.delete(apiRoutes.favArticle(slug), {},
-      {headers: {Authorization: `Token ${token}`}},)
+      console.log('unlike')
+      const {data} = await axios.delete(apiRoutes.favArticle(slug), {
+        headers: {Authorization: `Token ${token}`},
+        // data: {}
+      },)
       dispatch(FavoriteControlSuccess(data.article))
       return;
     }
-    const {data} = await axios.post(apiRoutes.favArticle(slug), {}, {headers: {Authorization: `Token ${token}`}},)
+    const {data} = await axios.post(apiRoutes.favArticle(slug), {}, {headers: {Authorization: `Token ${token}`}, data: {}},)
     dispatch(FavoriteControlSuccess(data.article))
     return;
-  } catch ({ response }) {
-    console.log(response.data.errors)
+  } catch (e) {
+    console.log(e)
   }
 }
 
@@ -72,7 +76,7 @@ export const fetchArticles = ( params = {}, user = null) => async (dispatch) =>{
       const likeSlugs = likedArticles.data.articles.map((obj) => obj.slug)
       const prepared = data.articles.map((obj) => likeSlugs.includes(obj.slug)
       ? {...obj, favorited: true}
-      : {...obj}
+      : obj
       )
       dispatch(fetchArticlesListSuccess({ articles: prepared, articlesCount: data.articlesCount}))
       return;

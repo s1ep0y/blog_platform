@@ -108,7 +108,7 @@ const articlesList = handleActions({
     articles[index] = payload;
     console.log(articles[index])
     return {
-      articles, ...state
+      ...state, articles: [...articles, articles[index] = payload ]
     }
   }
 }, {articles: [], loadedCount: 0, allCount: 0, errors: {}})
