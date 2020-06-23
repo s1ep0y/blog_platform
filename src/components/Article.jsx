@@ -81,10 +81,16 @@ const actionCreators = {
 const mapStateToProps = ({ userState, articlesList, ArticleFetchingState, favoriteControlState }) => {
 
   const status = ArticleFetchingState;
-  const { article } = articlesList;
-  const { user } = userState;
-  const loggedIn = user ? true : false;
+  const { article, favoritedSlugs } = articlesList;
+  const loggedIn = userState.status === 'success' ? true : false;
+  
   if (status === 'success') {
+    if (loggedIn) {
+      const favorited = favoritedSlugs.includes(article.slug)
+      return {
+        status, article: {...article, favorited}, loggedIn, favState: favoriteControlState,
+      };
+    }
     return {
       status, article, loggedIn, favState: favoriteControlState,
     };

@@ -64,7 +64,7 @@ const ArticleFetchingState = handleActions({
   },
 }, 'none');
 
-const fetchArticlesListFetchingState = handleActions({
+const fetchArticlesListState = handleActions({
   [actions.fetchArticlesListRequest]() {
     return 'requested';
   },
@@ -117,17 +117,25 @@ const articlesList = handleActions({
       ...state, article: payload, errors: {} }
       ;
   },
+  [actions.LogOut](state) {
+    return { ...state, favoritedSlugs: [] };
+  },
   [actions.getArticleRequest](state){
     return {...state, article: {}}
   },
   [actions.getArticleFailure](state, { payload }) {
     return { ...state ,errors: { errors: payload }, article: {} };
   },
+  [actions.fetchArticlesListRequest](state) {
+    return {...state}
+  },
   [actions.fetchArticlesListSuccess](state, { payload }) {
+
     return {
       ...state,
-      favoritedSlugs: [...state.favoritedSlugs, ...payload.favoritedSlugs],
-      articles: [...state.articles, ...payload.articles],
+      articlesCount: payload.articlesCount,
+      favoritedSlugs: payload.favoritedSlugs,
+      articles: payload.articles,
       loadedCount: state.loadedCount + payload.articles.length,
       allCount: payload.articlesCount,
       
@@ -139,33 +147,35 @@ const articlesList = handleActions({
       errors: payload,
     };
   },
+  [actions.paginationChange](state, {payload}){
+    return {...state, currentPage: payload}
+  },
   [actions.FavoriteControlSuccess](state, { payload }) {
-    const { articles, favoritedSlugs } = state;
-    const { slug, favorited } = payload;
+    const { articles, article, favoritedSlugs } = state;
+    const { slug, favorited, favoritesCount } = payload;
     const articleIndex = articles.findIndex((item) => item.slug === slug );
-    console.log(payload.favorited)
     const addToSlugs = () => {
       favoritedSlugs.push(slug)
       return favoritedSlugs
     }
 
     const deleteFromSlugs = () => {
-      const favIndex = favoritedSlugs.findIndex((item) => item.slug === slug);
+      const favIndex = favoritedSlugs.indexOf(slug)
       favoritedSlugs.splice(favIndex, 1)
       return favoritedSlugs
     }
-    
-    articles[articleIndex] = payload;
+    articles[articleIndex].favoritesCount = favoritesCount;
+    article.favoritesCount = favoritesCount;
     return {
       ...state,
-      article: payload,
-      articles: [...articles],
+      article,
+      articles,
       favoritedSlugs: favorited ? addToSlugs()
       : deleteFromSlugs(),
     };
   },
 }, {
-  article: {}, articles: [],favoritedSlugs: [], loadedCount: 0, allCount: 0, errors: {},
+  article: {}, currentPage: 1 ,articles: [],favoritedSlugs: [], articlesCount: 0, errors: {},
 });
 
 
@@ -173,7 +183,7 @@ export default combineReducers({
   favoriteControlState,
   SignUpFetchingState,
   PostArticleFetchingState,
-  fetchArticlesListFetchingState,
+  fetchArticlesListState,
   postArticleState,
   ArticleFetchingState,
   articlesList,

@@ -21,7 +21,7 @@ const dateDistance = (date) => {
 
 const ArticleListItem = (props) => {
   const {
-    title, author, date, tags, likes, likeByUser, likeControl,
+    title, author, date, tags, likes, likeByUser, likeControl
   } = props;
   dateDistance(date);
   return (

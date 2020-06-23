@@ -30,15 +30,23 @@ export const getArticleFailure = createAction('GET_ARTICLE_FAILURE');
 
 export const LogOut = createAction('LOG_OUT');
 
+export const paginationChange = createAction('PAGINATION_CHANGE')
 
-export const getArticle = (slug) => async (dispatch, getState) => {
+export const paginationControl = (page) => (dispatch) => {
+  
+  
+  dispatch(paginationChange(page))
+}
+
+export const handleLogOut = () => (dispatch) => {
+  dispatch(LogOut())
+}
+
+export const getArticle = (slug) => async (dispatch) => {
   dispatch(getArticleRequest());
   try {
-    const { articlesList } = getState()
     const { data } = await axios.get(apiRoutes.oneArticle(slug))
-    const favorited = articlesList.favoritedSlugs.includes(data.article.slug)
-    const article = {...data.article, favorited}
-    dispatch(getArticleSuccess(article))
+    dispatch(getArticleSuccess(data.article))
   } catch (error) {
     console.log(error)
   }
@@ -78,28 +86,21 @@ export const postArticle = (article) => async (dispatch, getState) => {
   }
 };
 
-export const fetchArticles = (params = []) => async (dispatch, getState) => {
+export const fetchArticles = (params = {}) => async (dispatch, getState) => {
   const { userState } = getState()
-
-  const queries = params.length !== 0
-  ? Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
-  : [];
-
+  const queries = Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
   dispatch(fetchArticlesListRequest());
   try {
     const { data } = await axios.get(apiRoutes.articles('?' + queries));
     if (userState.status === 'success') {
       const favoritedData = await axios.get(apiRoutes.articles(`?favorited=${userState.user.username}&` + queries));
       const favoritedSlugs = favoritedData.data.articles.map((obj) => obj.slug);
-      const prepared = data.articles.map((obj) => (favoritedSlugs.includes(obj.slug)
-        ? { ...obj, favorited: true }
-        : obj));
-      dispatch(fetchArticlesListSuccess({ articles: prepared, articlesCount: data.articlesCount, favoritedSlugs }));
+      dispatch(fetchArticlesListSuccess({ articles: data.articles, articlesCount: data.articlesCount, favoritedSlugs }));
       return;
     }
-    dispatch(fetchArticlesListSuccess(data))
+    dispatch(fetchArticlesListSuccess({...data, favoritedSlugs: []}))
   } catch (error) {
-    console.log(error);
+    console.log(error)
     dispatch(fetchArticlesListFailure(error.response.data.errors));
   }
 };
