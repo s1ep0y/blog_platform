@@ -1,7 +1,8 @@
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
-import { act } from 'react-dom/test-utils';
+
 import * as actions from '../actions';
+import { act } from 'react-dom/test-utils';
 
 const SignInFetchingState = handleActions({
   [actions.signInRequest]() {
@@ -23,7 +24,19 @@ const SignUpFetchingState = handleActions({
     return 'failed';
   },
   [actions.signUpSuccess]() {
-    return 'finished';
+    return 'success';
+  },
+}, 'none');
+
+const favoriteControlState = handleActions({
+  [actions.FavoriteControlRequest]() {
+    return 'requested';
+  },
+  [actions.FavoriteControlFailure]() {
+    return 'failed';
+  },
+  [actions.FavoriteControlSuccess]() {
+    return 'success';
   },
 }, 'none');
 
@@ -32,10 +45,22 @@ const PostArticleFetchingState = handleActions({
     return 'requested';
   },
   [actions.postArticleSuccess]() {
-    return 'failed';
+    return 'success';
   },
   [actions.postArticleFailure]() {
-    return 'finished';
+    return 'failed';
+  },
+}, 'none');
+
+const ArticleFetchingState = handleActions({
+  [actions.getArticleRequest]() {
+    return 'requested';
+  },
+  [actions.getArticleSuccess]() {
+    return 'success';
+  },
+  [actions.getArticleFailure]() {
+    return 'failed';
   },
 }, 'none');
 
@@ -44,10 +69,10 @@ const fetchArticlesListFetchingState = handleActions({
     return 'requested';
   },
   [actions.fetchArticlesListSuccess]() {
-    return 'failed';
+    return 'success';
   },
   [actions.fetchArticlesListFailure]() {
-    return 'finished';
+    return 'failed';
   },
 }, 'none');
 
@@ -60,7 +85,6 @@ const userState = handleActions({
     return { status: 'fail', errors: payload, user: {} };
   },
   [actions.LogOut]() {
-    console.log('lol')
     localStorage.removeItem('user');
     return { status: '', errors: {}, user: {} };
   },
@@ -78,7 +102,7 @@ const signUpState = handleActions({
   },
 }, { status: '', errors: {}, user: {} });
 
-const articleState = handleActions({
+const postArticleState = handleActions({
   [actions.postArticleSuccess]() {
     return { status: 'success', errors: {} };
   },
@@ -88,12 +112,25 @@ const articleState = handleActions({
 }, { status: 'success', errors: {} });
 
 const articlesList = handleActions({
-  [actions.fetchArticlesListSuccess](state, { payload }) {
-    const newArticles = payload.articles;
+  [actions.getArticleSuccess](state, { payload }) {
     return {
-      articles: [...state.articles, ...newArticles],
-      loadedCount: state.loadedCount + newArticles.length,
+      ...state, article: payload, errors: {} }
+      ;
+  },
+  [actions.getArticleRequest](state){
+    return {...state, article: {}}
+  },
+  [actions.getArticleFailure](state, { payload }) {
+    return { ...state ,errors: { errors: payload }, article: {} };
+  },
+  [actions.fetchArticlesListSuccess](state, { payload }) {
+    return {
+      ...state,
+      favoritedSlugs: [...state.favoritedSlugs, ...payload.favoritedSlugs],
+      articles: [...state.articles, ...payload.articles],
+      loadedCount: state.loadedCount + payload.articles.length,
       allCount: payload.articlesCount,
+      
     };
   },
   [actions.fetchArticlesListFailure](state, { payload }) {
@@ -103,24 +140,42 @@ const articlesList = handleActions({
     };
   },
   [actions.FavoriteControlSuccess](state, { payload }) {
-    const { articles } = state;
-    const index = articles.findIndex(((item) => item.slug === payload.slug));
-    articles[index] = payload;
+    const { articles, favoritedSlugs } = state;
+    const { slug, favorited } = payload;
+    const articleIndex = articles.findIndex((item) => item.slug === slug );
+    console.log(payload.favorited)
+    const addToSlugs = () => {
+      favoritedSlugs.push(slug)
+      return favoritedSlugs
+    }
+
+    const deleteFromSlugs = () => {
+      const favIndex = favoritedSlugs.findIndex((item) => item.slug === slug);
+      favoritedSlugs.splice(favIndex, 1)
+      return favoritedSlugs
+    }
+    
+    articles[articleIndex] = payload;
     return {
-      ...state, articles: [...articles, articles[index] = payload],
+      ...state,
+      article: payload,
+      articles: [...articles],
+      favoritedSlugs: favorited ? addToSlugs()
+      : deleteFromSlugs(),
     };
   },
 }, {
-  articles: [], loadedCount: 0, allCount: 0, errors: {},
+  article: {}, articles: [],favoritedSlugs: [], loadedCount: 0, allCount: 0, errors: {},
 });
 
 
 export default combineReducers({
-  SignInFetchingState,
+  favoriteControlState,
   SignUpFetchingState,
   PostArticleFetchingState,
   fetchArticlesListFetchingState,
-  articleState,
+  postArticleState,
+  ArticleFetchingState,
   articlesList,
   userState,
   signUpState,

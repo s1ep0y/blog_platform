@@ -11,6 +11,7 @@ import Header from './components/Header'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
 import AddArticle from './components/AddArticle'
+import Article from './components/Article'
 import { connect } from 'react-redux';
 
 function App(props) {
@@ -31,8 +32,8 @@ function App(props) {
             <Route
             exact
               key={uniqueId()}
-              path={'/articles/' + item.slug}
-              children={(<div>{item.title}</div>)}
+              path={'/articles/:slug'}
+              children={(<Article />)}
             />
           ))}
             <Route path="/signup">

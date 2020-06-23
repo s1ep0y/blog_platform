@@ -24,65 +24,83 @@ export const FavoriteControlRequest = createAction('FAVORITE_CONTROL_REQUEST');
 export const FavoriteControlSuccess = createAction('FAVORITE_CONTROL_SUCCESS');
 export const FavoriteControlFailure = createAction('FAVORITE_CONTROL_FAILURE');
 
+export const getArticleRequest = createAction('GET_ARTICLE_REQUEST');
+export const getArticleSuccess = createAction('GET_ARTICLE_SUCCESS');
+export const getArticleFailure = createAction('GET_ARTICLE_FAILURE');
+
 export const LogOut = createAction('LOG_OUT');
 
 
-export const FavoriteControl = (params) => async (dispatch) => {
-  const [slug, favorited, token] = params;
+export const getArticle = (slug) => async (dispatch, getState) => {
+  dispatch(getArticleRequest());
+  try {
+    const { articlesList } = getState()
+    const { data } = await axios.get(apiRoutes.oneArticle(slug))
+    const favorited = articlesList.favoritedSlugs.includes(data.article.slug)
+    const article = {...data.article, favorited}
+    dispatch(getArticleSuccess(article))
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export const favoriteControl = (slug, favorited) => async (dispatch, getState) => {
+  const { userState: { user } } = getState()
   dispatch(FavoriteControlRequest());
-  console.log(token);
   try {
     if (favorited) {
-      console.log('unlike');
       const { data } = await axios.delete(apiRoutes.favArticle(slug), {
-        headers: { Authorization: `Token ${token}` },
+        headers: { Authorization: `Token ${user.token}` },
       });
       dispatch(FavoriteControlSuccess(data.article));
       return;
     }
-    const { data } = await axios.post(apiRoutes.favArticle(slug), {}, { headers: { Authorization: `Token ${token}` }, data: {} });
+    const { data } = await axios.post(apiRoutes.favArticle(slug), {}, { headers: { Authorization: `Token ${user.token}` }, data: {} });
     dispatch(FavoriteControlSuccess(data.article));
     return;
   } catch (e) {
+    dispatch(FavoriteControlFailure())
     console.log(e);
   }
 };
 
-export const postArticle = ({ article, token }) => async (dispatch) => {
+export const postArticle = (article) => async (dispatch, getState) => {
   dispatch(postArticleRequest());
+  const { userState: { user } } = getState()
   try {
     const { data } = await axios.post(apiRoutes.articles(),
       { article: { ...article, tagList: article.tagList } },
-      { headers: { Authorization: `Token ${token}` } });
-    console.log(data);
-    dispatch(postArticleSuccess());
+      { headers: { Authorization: `Token ${user.token}` } });
+    dispatch(postArticleSuccess(data));
   } catch ({ response }) {
     dispatch(postArticleFailure(response.data.errors));
     console.log(response);
   }
 };
 
-export const fetchArticles = (params = {}, user = null) => async (dispatch) => {
-  dispatch(fetchArticlesListRequest());
+export const fetchArticles = (params = []) => async (dispatch, getState) => {
+  const { userState } = getState()
+
   const queries = params.length !== 0
-    ? Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
-    : [];
+  ? Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
+  : [];
+
+  dispatch(fetchArticlesListRequest());
   try {
-    console.log(user)
-    const { data } = await axios.get(apiRoutes.articles(`?${queries}`));
-    if (user) {
-      const likedArticles = await axios.get(apiRoutes.articles(`?favorited=${user}&${queries}`));
-      const likeSlugs = likedArticles.data.articles.map((obj) => obj.slug);
-      const prepared = data.articles.map((obj) => (likeSlugs.includes(obj.slug)
+    const { data } = await axios.get(apiRoutes.articles('?' + queries));
+    if (userState.status === 'success') {
+      const favoritedData = await axios.get(apiRoutes.articles(`?favorited=${userState.user.username}&` + queries));
+      const favoritedSlugs = favoritedData.data.articles.map((obj) => obj.slug);
+      const prepared = data.articles.map((obj) => (favoritedSlugs.includes(obj.slug)
         ? { ...obj, favorited: true }
         : obj));
-      dispatch(fetchArticlesListSuccess({ articles: prepared, articlesCount: data.articlesCount }));
+      dispatch(fetchArticlesListSuccess({ articles: prepared, articlesCount: data.articlesCount, favoritedSlugs }));
       return;
     }
     dispatch(fetchArticlesListSuccess(data))
-  } catch ({ response }) {
-    console.log(response);
-    dispatch(fetchArticlesListFailure(response.data.errors));
+  } catch (error) {
+    console.log(error);
+    dispatch(fetchArticlesListFailure(error.response.data.errors));
   }
 };
 

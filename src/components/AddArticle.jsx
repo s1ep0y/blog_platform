@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import {
   Form, Input, Button,
 } from 'antd';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import * as actions from '../actions/index';
@@ -51,10 +51,7 @@ const AddArticle = (props) => {
         return { ...acc };
       },
       { tagList: [] });
-      postArticle({
-        article: noEmpty,
-        token: user.token,
-      });
+      postArticle(noEmpty);
     },
 
   });

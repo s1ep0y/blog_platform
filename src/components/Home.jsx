@@ -12,28 +12,26 @@ import ArticleListItem from './ArticleListItem';
 
 const Home = (props) => {
   const [loaded, setLoaded] = useState(false);
-  const history = useHistory();
-
+  
   const {
-    logOut, articles, allCount, loadedCount, login, user, FavoriteControl, fetchArticles,
+    articles, getArticle, allCount, loadedCount, login, user, favoriteControl, fetchArticles,
   } = props;
-  console.log(loaded);
   if (!loaded) {
-    fetchArticles({}, user ? user.username : '');
+    fetchArticles();
     setLoaded(true);
   }
 
 
-  const likeControl = (...params) => (e) => {
+  const likeControl = (slug, favorited) => (e) => {
     e.preventDefault();
     if (!login) {
       alert('need to loign');
       return;
     }
-    FavoriteControl([...params, user.token]);
+    favoriteControl(slug, favorited);
   };
   const articlesPrepared = articles.map((item) => (
-    <Link to={`/articles/${item.slug}`} key={uniqueId()}>
+    <Link to={`/articles/${item.slug}`} key={uniqueId()} onClick={() => getArticle(item.slug)}>
       <ArticleListItem
         title={item.title}
         author={item.author.username}
@@ -56,7 +54,8 @@ const Home = (props) => {
 
 const actionCreators = {
   fetchArticles: actions.fetchArticles,
-  FavoriteControl: actions.FavoriteControl,
+  favoriteControl: actions.favoriteControl,
+  getArticle: actions.getArticle,
 };
 
 const mapStateToProps = ({ articlesList, userState }) => {
@@ -77,18 +76,18 @@ Home.defaultProps = {
   articles: [],
   allCount: 0,
   loadedCount: 0,
-  logOut: () => {},
+  getArticle: () => {},
   fetchArticles: () => {},
-  FavoriteControl: () => {},
+  favoriteControl: () => {},
 };
 
 Home.propTypes = {
   articles: PropTypes.array,
   allCount: PropTypes.number,
   loadedCount: PropTypes.number,
-  logOut: PropTypes.func,
+  getArticle: PropTypes.func,
   fetchArticles: PropTypes.func,
-  FavoriteControl: PropTypes.func,
+  favoriteControl: PropTypes.func,
 };
 
 export default connect(mapStateToProps, actionCreators)(Home);
