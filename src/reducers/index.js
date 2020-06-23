@@ -112,13 +112,17 @@ const postArticleState = handleActions({
 }, { status: 'success', errors: {} });
 
 const articlesList = handleActions({
+  [actions.signInSuccess](state, { payload }) {
+    console.log(state.currentPage)
+    return {...state, articles: [] }
+  },
+  [actions.LogOut](state){
+    return {...state, articles: [], article: {}}
+  },
   [actions.getArticleSuccess](state, { payload }) {
     return {
       ...state, article: payload, errors: {} }
       ;
-  },
-  [actions.LogOut](state) {
-    return { ...state, favoritedSlugs: [] };
   },
   [actions.getArticleRequest](state){
     return {...state, article: {}}
@@ -134,7 +138,6 @@ const articlesList = handleActions({
     return {
       ...state,
       articlesCount: payload.articlesCount,
-      favoritedSlugs: payload.favoritedSlugs,
       articles: payload.articles,
       loadedCount: state.loadedCount + payload.articles.length,
       allCount: payload.articlesCount,
@@ -151,31 +154,18 @@ const articlesList = handleActions({
     return {...state, currentPage: payload}
   },
   [actions.FavoriteControlSuccess](state, { payload }) {
-    const { articles, article, favoritedSlugs } = state;
-    const { slug, favorited, favoritesCount } = payload;
+    const { articles } = state;
+    const { slug } = payload;
     const articleIndex = articles.findIndex((item) => item.slug === slug );
-    const addToSlugs = () => {
-      favoritedSlugs.push(slug)
-      return favoritedSlugs
-    }
-
-    const deleteFromSlugs = () => {
-      const favIndex = favoritedSlugs.indexOf(slug)
-      favoritedSlugs.splice(favIndex, 1)
-      return favoritedSlugs
-    }
-    articles[articleIndex].favoritesCount = favoritesCount;
-    article.favoritesCount = favoritesCount;
+    articles[articleIndex] = payload;
     return {
       ...state,
-      article,
-      articles,
-      favoritedSlugs: favorited ? addToSlugs()
-      : deleteFromSlugs(),
+      article: payload,
+      articles
     };
   },
 }, {
-  article: {}, currentPage: 1 ,articles: [],favoritedSlugs: [], articlesCount: 0, errors: {},
+  article: {}, currentPage: 1 ,articles: [], articlesCount: 0, errors: {},
 });
 
 

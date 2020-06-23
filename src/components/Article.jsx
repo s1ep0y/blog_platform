@@ -9,7 +9,7 @@ import { differenceInMilliseconds, formatDuration } from 'date-fns';
 import * as actions from '../actions/index';
 import { connect } from 'react-redux';
 import {
-  useLocation, useParams
+  useParams
 } from "react-router-dom";
 
 const dateDistance = (date) => {
@@ -81,14 +81,16 @@ const actionCreators = {
 const mapStateToProps = ({ userState, articlesList, ArticleFetchingState, favoriteControlState }) => {
 
   const status = ArticleFetchingState;
-  const { article, favoritedSlugs } = articlesList;
+  const { article } = articlesList;
   const loggedIn = userState.status === 'success' ? true : false;
-  
+
+  if(Object.keys(article).length === 0) {
+    return {status: 'none'}
+  }
   if (status === 'success') {
     if (loggedIn) {
-      const favorited = favoritedSlugs.includes(article.slug)
       return {
-        status, article: {...article, favorited}, loggedIn, favState: favoriteControlState,
+        status, article, loggedIn, favState: favoriteControlState,
       };
     }
     return {

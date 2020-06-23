@@ -42,10 +42,13 @@ export const handleLogOut = () => (dispatch) => {
   dispatch(LogOut())
 }
 
-export const getArticle = (slug) => async (dispatch) => {
+export const getArticle = (slug) => async (dispatch, getState) => {
   dispatch(getArticleRequest());
+  const { userState } = getState();
   try {
-    const { data } = await axios.get(apiRoutes.oneArticle(slug))
+    const headers = userState.status === 'success' ? { Authorization: `Token ${userState.user.token}`} : {}
+    const { data } = await axios.get(apiRoutes.oneArticle(slug), { headers })
+    console.log(data)
     dispatch(getArticleSuccess(data.article))
   } catch (error) {
     console.log(error)
@@ -87,18 +90,13 @@ export const postArticle = (article) => async (dispatch, getState) => {
 };
 
 export const fetchArticles = (params = {}) => async (dispatch, getState) => {
-  const { userState } = getState()
+  const { userState } = getState();
   const queries = Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
   dispatch(fetchArticlesListRequest());
   try {
-    const { data } = await axios.get(apiRoutes.articles('?' + queries));
-    if (userState.status === 'success') {
-      const favoritedData = await axios.get(apiRoutes.articles(`?favorited=${userState.user.username}&` + queries));
-      const favoritedSlugs = favoritedData.data.articles.map((obj) => obj.slug);
-      dispatch(fetchArticlesListSuccess({ articles: data.articles, articlesCount: data.articlesCount, favoritedSlugs }));
-      return;
-    }
-    dispatch(fetchArticlesListSuccess({...data, favoritedSlugs: []}))
+    const headers = userState.status === 'success' ? { Authorization: `Token ${userState.user.token}`} : {};
+    const { data } = await axios.get(apiRoutes.articles('?' + queries), {headers});
+    dispatch(fetchArticlesListSuccess(data))
   } catch (error) {
     console.log(error)
     dispatch(fetchArticlesListFailure(error.response.data.errors));

@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import * as actions from '../actions/index';
 import ArticleListItem from './ArticleListItem';
+import {Loading3QuartersOutlined} from '@ant-design/icons';
 
 
 const Home = (props) => {
@@ -15,25 +16,22 @@ const Home = (props) => {
   const {
     paginationControl,
     fetchArticlesListState,
-    favoriteControlState,
     currentPage,
     articles,
     getArticle,
     articlesCount, login, favoriteControl, fetchArticles,
   } = props;
-  
-  if(articles.length === 0) {
-    fetchArticles({
-      limit: 10,
-    });
-  }
 
   if(fetchArticlesListState === 'requested') {
-    return <div>Loading</div>;
+    return <div><Loading3QuartersOutlined spin style={{ fontSize: 48 }}/></div>;
   }
-
-  if(fetchArticlesListState === 'failed') {
-    return <div>Something went wrong</div>;
+  
+  if(articles.length === 0) {
+    console.log(currentPage)
+    fetchArticles({
+      offset: (currentPage - 1)*10,
+      limit: 10,
+    });
   }
 
   const paginationHandler = (page) => {
@@ -43,6 +41,13 @@ const Home = (props) => {
     });
     paginationControl(page)
   }
+
+
+
+  if(fetchArticlesListState === 'failed') {
+    return <div>Something went wrong</div>;
+  }
+
 
   const likeControl = (slug, favorited) => (e) => {
     e.preventDefault();
@@ -86,18 +91,15 @@ const mapStateToProps = ({ articlesList, userState, fetchArticlesListState, favo
   const { articles, articlesCount,  favoritedSlugs, currentPage} = articlesList;
   if (fetchArticlesListState === 'success'){
     if (userState.status === 'success') {
-      const prepared = articles.map((obj) => (favoritedSlugs.includes(obj.slug)
-          ? { ...obj, favorited: true }
-          : obj));
       return {
-        login: true, articles: prepared, articlesCount, currentPage, fetchArticlesListState, favoriteControlState
+        login: true, articles, articlesCount, currentPage, fetchArticlesListState, favoriteControlState
       };
     }
     return {
       articles, articlesCount,  currentPage, fetchArticlesListState
     };
   }
-  return {};
+  return {fetchArticlesListState, currentPage};
 };
 
 Home.defaultProps = {
