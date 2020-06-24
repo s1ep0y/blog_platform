@@ -90,7 +90,7 @@ const actionCreators = {
 const mapStateToProps = ({ articlesList, userState, fetchArticlesListState, favoriteControlState }) => {
   const { articles, articlesCount,  favoritedSlugs, currentPage} = articlesList;
   if (fetchArticlesListState === 'success'){
-    if (userState.status === 'success') {
+    if (userState.loggedIn) {
       return {
         login: true, articles, articlesCount, currentPage, fetchArticlesListState, favoriteControlState
       };

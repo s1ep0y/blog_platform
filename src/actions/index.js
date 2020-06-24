@@ -46,7 +46,7 @@ export const getArticle = (slug) => async (dispatch, getState) => {
   dispatch(getArticleRequest());
   const { userState } = getState();
   try {
-    const headers = userState.status === 'success' ? { Authorization: `Token ${userState.user.token}`} : {}
+    const headers = userState.loggedIn ? { Authorization: `Token ${userState.user.token}`} : {}
     const { data } = await axios.get(apiRoutes.oneArticle(slug), { headers })
     console.log(data)
     dispatch(getArticleSuccess(data.article))
@@ -94,7 +94,7 @@ export const fetchArticles = (params = {}) => async (dispatch, getState) => {
   const queries = Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
   dispatch(fetchArticlesListRequest());
   try {
-    const headers = userState.status === 'success' ? { Authorization: `Token ${userState.user.token}`} : {};
+    const headers = userState.loggedIn ? { Authorization: `Token ${userState.user.token}`} : {};
     const { data } = await axios.get(apiRoutes.articles('?' + queries), {headers});
     dispatch(fetchArticlesListSuccess(data))
   } catch (error) {

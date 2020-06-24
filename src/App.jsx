@@ -10,7 +10,7 @@ import Home from './components/Home'
 import Header from './components/Header'
 import Login from './components/Login'
 import SignUp from './components/SignUp'
-import AddArticle from './components/AddArticle'
+import ArticleForm from './components/ArticleForm'
 import Article from './components/Article'
 import { connect } from 'react-redux';
 
@@ -26,7 +26,10 @@ function App(props) {
               <Login />
             </Route>
             <Route path="/addarticle">
-              <AddArticle />
+              <ArticleForm />
+            </Route>
+            <Route path="/editarticle/:slug">
+              <ArticleForm />
             </Route>
             {props.articles.map((item)=> (
             <Route

@@ -47,8 +47,8 @@ const Header = (props) => {
 };
 
 const mapStateToProps = ({ userState }) => {
-  const { status, user } = userState;
-  if (status === 'success') {
+  const { loggedIn, user } = userState;
+  if (loggedIn) {
     return {
       username: user.username, login: true,
     };

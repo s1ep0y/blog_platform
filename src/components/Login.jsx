@@ -13,9 +13,9 @@ import * as actions from '../actions/index';
 const SignIn = (props) => {
   const { status, resErrors, login } = props;
   const history = useHistory();
-  const redirectToLogin = () => {
-    history.push('/signup');
-  };
+  // const redirectToLogin = () => {
+  //   history.push('/signup');
+  // };
 
 
   const valShema = Yup
@@ -51,7 +51,7 @@ const SignIn = (props) => {
     if (status === '') {
       return null;
     }
-    if (status === 'success') {
+    if (status === 'finished') {
       setTimeout(() => {
         history.push('/');
       }, 3000);
@@ -133,9 +133,10 @@ const actionCreators = {
   login: actions.signIn,
 };
 
-const mapStateToProps = ({ userState }) => {
+const mapStateToProps = ({ userState, SignInFetchingState }) => {
+  console.log(SignInFetchingState)
   const { status } = userState;
-  if (status === 'fail') return { status, resErrors: userState.errors };
+  if (SignInFetchingState === 'failed') return { status, resErrors: userState.errors };
   return { status };
 };
 

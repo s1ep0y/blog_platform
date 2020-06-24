@@ -1,20 +1,40 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import {
   Form, Input, Button,
 } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import * as actions from '../actions/index';
 
 const AddArticle = (props) => {
-  const { postArticle, login, user } = props;
+  const { postArticle, loggedIn, username, action, article, errors, getArticle } = props;
+  const [updatePage, setUpdatePage] = useState(false);
   const history = useHistory();
+  const { pathname } = useLocation();
+  const { slug } = useParams();
+  const [form] = Form.useForm();
+
   useEffect(() => {
-    if (!login) history.push('/login');
+    if (!loggedIn) history.push('/loggedIn');
+    if(!updatePage){
+    if(pathname.includes('/editarticle/')) {
+      setUpdatePage(true);
+      if(article.slug !== slug) {
+        getArticle(slug)
+        return;
+      }
+      if(article.author.username !== username) {
+        if (!loggedIn) history.push('/');
+      };
+      // form.resetFields();
+    };
+  }
+  if(updatePage) form.setFieldsValue(initialValues);
   });
+
 
 
   const valShema = Yup
@@ -31,12 +51,15 @@ const AddArticle = (props) => {
         .required('Please enter text of article'),
     });
 
+  
+  const initialValues = updatePage ? {title: article.body,
+    description: article.description,
+    body: article.body,}
+    :  { title: '', description: '', body: ''}
+
   const formik = useFormik({
-    initialValues: {
-      title: '',
-      description: '',
-      body: '',
-    },
+    initialValues,
+    enableReinitialize: true,
     validateOnChange: false,
     validateOnBlur: true,
     validationSchema: valShema,
@@ -56,13 +79,19 @@ const AddArticle = (props) => {
 
   });
 
+  
+
   return (
     <div className="wrapper">
       <Form
         onFinish={formik.handleSubmit}
+        initialValues={initialValues}
+        form={form}
       >
+        {JSON.stringify(initialValues)}
         <Form.Item
           name="title"
+          
           label="Title"
           className="required"
           validateStatus={formik.errors.title && formik.touched.title
@@ -73,7 +102,7 @@ const AddArticle = (props) => {
             : null}
 
         >
-          <Input onChange={formik.handleChange} onBlur={formik.handleBlur} />
+          <Input value={JSON.stringify(formik.values)} onChange={formik.handleChange} onBlur={formik.handleBlur} />
         </Form.Item>
         <Form.Item
           name="description"
@@ -163,12 +192,14 @@ const AddArticle = (props) => {
 
 const actionCreators = {
   postArticle: actions.postArticle,
+  getArticle: actions.getArticle,
 };
 
-const mapStateToProps = ({ userState }) => {
-  const { status, user } = userState;
-  if (status === 'success') return { user, login: true };
-  return ({ login: false, user: {} });
+const mapStateToProps = ({ userState, articlesList }) => {
+  const { article, errors } = articlesList;
+  const { loggedIn, user } = userState;
+  if (loggedIn) return { username: user.username, loggedIn, article, errors };
+  return ({ loggedIn });
 };
 
 AddArticle.defaultProps = {

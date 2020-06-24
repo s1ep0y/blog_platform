@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Button, Card, Tag,
 } from 'antd';
+import { Link } from 'react-router-dom';
 import { HeartTwoTone } from '@ant-design/icons';
 import { uniqueId } from 'lodash';
 import PropTypes from 'prop-types';
@@ -25,7 +26,8 @@ const dateDistance = (date) => {
 
 
 const SingleArticle = (props) => {
-  const { status, getArticle, article, loggedIn, favoriteControl, favState } = props;
+  console.log(props)
+  const { status, getArticle, username ,article, loggedIn, favoriteControl, favState } = props;
   const { slug } = useParams()
   const likeControl = () => (e) => {
     e.preventDefault();
@@ -36,13 +38,24 @@ const SingleArticle = (props) => {
     favoriteControl(article.slug, article.favorited);
   };
 
+  const EditButton = () => {
+    if(username !== article.author.username) {
+      return null;
+    }
+    return (
+      <Link to={`/editarticle/${article.slug}`}>
+        <Button> Edit article</Button>
+      </Link>
+    )
+  }
+
   switch (status) {
     case 'none':
       getArticle(slug)
       return (<div>Wait a bit</div>)
     case 'requested':
       return (<div>A bit more</div>)
-    case 'success' :
+    case 'finished' :
       return (
         <div>
       <Card title={article.title}>
@@ -66,6 +79,7 @@ const SingleArticle = (props) => {
                 ))
             }
       </Card>
+      {EditButton()}
     </div>
       )
     default:
@@ -82,15 +96,15 @@ const mapStateToProps = ({ userState, articlesList, ArticleFetchingState, favori
 
   const status = ArticleFetchingState;
   const { article } = articlesList;
-  const loggedIn = userState.status === 'success' ? true : false;
-
+  const { loggedIn, user } = userState
   if(Object.keys(article).length === 0) {
     return {status: 'none'}
   }
-  if (status === 'success') {
+  console.log(status)
+  if (status === 'finished') {
     if (loggedIn) {
       return {
-        status, article, loggedIn, favState: favoriteControlState,
+        loggedIn, username: user.username ,article, status, favState: favoriteControlState,
       };
     }
     return {

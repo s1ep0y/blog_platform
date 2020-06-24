@@ -57,7 +57,7 @@ const ArticleFetchingState = handleActions({
     return 'requested';
   },
   [actions.getArticleSuccess]() {
-    return 'success';
+    return 'finished';
   },
   [actions.getArticleFailure]() {
     return 'failed';
@@ -79,19 +79,20 @@ const fetchArticlesListState = handleActions({
 const userState = handleActions({
   [actions.signInSuccess](state, { payload }) {
     localStorage.setItem('user', JSON.stringify(payload.user));
-    return { status: 'success', errors: {}, user: payload.user };
+    return { loggedIn: true, errors: {}, user: payload.user };
   },
   [actions.signInFailure](state, { payload }) {
-    return { status: 'fail', errors: payload, user: {} };
+    return { loggedIn: false, errors: payload, user: {} };
   },
   [actions.LogOut]() {
     localStorage.removeItem('user');
-    return { status: '', errors: {}, user: {} };
+    return { errors: {}, user: {}, loggedIn: false, };
   },
   [actions.userLoggedIn](state, { payload }) {
-    return { status: 'success', errors: {}, user: JSON.parse(payload) };
+    return { loggedIn: true, errors: {}, user: JSON.parse(payload) };
   },
-}, { status: '', errors: {}, user: {} });
+}, { errors: {}, user: {}, loggedIn: false, });
+
 
 const signUpState = handleActions({
   [actions.signUpSuccess]() {
@@ -113,7 +114,6 @@ const postArticleState = handleActions({
 
 const articlesList = handleActions({
   [actions.signInSuccess](state, { payload }) {
-    console.log(state.currentPage)
     return {...state, articles: [] }
   },
   [actions.LogOut](state){
@@ -170,6 +170,7 @@ const articlesList = handleActions({
 
 
 export default combineReducers({
+  SignInFetchingState,
   favoriteControlState,
   SignUpFetchingState,
   PostArticleFetchingState,
