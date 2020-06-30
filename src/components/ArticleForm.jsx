@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import {
-  Form, Input, Button,
+  Form, Input, Button, Tag
 } from 'antd';
+import { uniqueId } from 'lodash';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
@@ -11,17 +12,13 @@ import * as actions from '../actions/index';
 
 const AddArticle = (props) => {
   const { postArticle, loggedIn, username, article, errors, getArticle, ArticleFetchingState } = props;
-  const [updatePage, setUpdatePage] = useState(false);
+  const [tagList, setTags] = useState([]);
   const history = useHistory();
   const { pathname } = useLocation();
   const { slug } = useParams();
   const [form] = Form.useForm();
 
-  // useEffect(() => {
-  //   form.resetFields();
-  // })
-
-  console.log(pathname.includes('/editarticle/'))
+  
 
   const valShema = Yup
     .object()
@@ -40,8 +37,9 @@ const AddArticle = (props) => {
   
   const initialValues = pathname.includes('/editarticle/') ? {title: article.title,
     description: article.description,
-    body: article.body,}
-    :  { title: '', description: '', body: ''}
+    body: article.body,
+    tag: '',}
+    :  { title: '', description: '', body: '', tag: ''}
 
     // if(updatePage) 
 
@@ -52,17 +50,10 @@ const AddArticle = (props) => {
     validateOnBlur: true,
     validationSchema: valShema,
     onSubmit: async (values) => {
-      const valKeys = Object.keys(values);
-      const noEmpty = valKeys.reduce((acc, currentValue) => {
-        if (values[currentValue]) {
-          const elem = values[currentValue];
-          return currentValue.includes('tag') ? { ...acc, tagList: [...acc.tagList, elem] }
-            : { ...acc, [currentValue]: elem };
-        }
-        return { ...acc };
-      },
-      { tagList: [] });
-      postArticle(noEmpty);
+      const article = {
+        ...values, tagList
+      }
+      postArticle(article);
     },
 
   });
@@ -79,17 +70,38 @@ const AddArticle = (props) => {
     if(article.author.username !== username) {
       history.push('/')
     }
+    if(article.tagList.length !== 0 && tagList.length === 0) {
+      setTags(article.tagList)
+    }
 } 
+
+const addTagToList = e => {
+  e.preventDefault();
+  if(formik.values.tag.length === 0) {
+    return;
+  }
+    setTags([...tagList, formik.values.tag])
+    formik.setFieldValue('tag', '')
+    form.setFieldsValue({
+      tag: ''
+    })
+};
+
+const removeTagFromList = (val) => (e) => {
+  e.preventDefault()
+  setTags(tagList.filter((elem) => elem !== val))
+}
   
-// form.setFieldsValue(initialValues);
+console.log(tagList)
   return (
     <div className="wrapper">
       <Form
         onFinish={formik.handleSubmit}
         initialValues={initialValues}
         form={form}
+       
       >
-        {JSON.stringify(initialValues)}
+        {JSON.stringify(formik.values)}
         <Form.Item
           name="title"
           
@@ -123,7 +135,7 @@ const AddArticle = (props) => {
         <Form.Item
           name="body"
           label="Article text"
-          className="requred"
+          className="required"
           validateStatus={formik.errors.body && formik.touched.body
             ? 'error'
             : 'success'}
@@ -133,53 +145,24 @@ const AddArticle = (props) => {
         >
           <Input.TextArea onChange={formik.handleChange} onBlur={formik.handleBlur} />
         </Form.Item>
-        <Form.Item label="Tags">
 
           <Form.Item
-            name="tag_base"
-            noStyle="noStyle"
+            label="Add tag"
+            name="tag"
           >
             <Input
+            allowClear
+            value={formik.values.tag}
               onChange={formik.handleChange}
+              onPressEnter={addTagToList}
               style={{
                 marginBottom: '24px',
               }}
             />
+            
           </Form.Item>
-          <Form.List name="tag">
-            {
-        (fields, { add }) => (
-          <div>
-            {
-              fields.map((field) => (
-                <Form.Item key={field.key}>
-                  <Form.Item
-                    {...field}
-                    style={{ marginBottom: '0px' }}
-                  >
-                    <Input
-                      onChange={formik.handleChange}
-                    />
-                  </Form.Item>
-                </Form.Item>
-              ))
-}
-            <Form.Item style={{ width: 90 }}>
-              <Button
-                type="dashed"
-                onClick={() => {
-                  add();
-                }}
-              >
-                Add field
-              </Button>
-            </Form.Item>
-          </div>
-        )
-              }
-          </Form.List>
-
-        </Form.Item>
+            <div>{tagList.map((text)=> <Tag key={uniqueId()}
+              closable={true} onClose={removeTagFromList(text)}>{text}</Tag>)}</div>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Add Article
@@ -198,7 +181,6 @@ const actionCreators = {
 
 const mapStateToProps = ({ userState, articlesList, ArticleFetchingState }) => {
   const { article, errors } = articlesList;
-  console.log(article)
   const { loggedIn, user } = userState;
   if (loggedIn) return { username: user.username, loggedIn, article, errors, ArticleFetchingState };
   return ({ loggedIn });
