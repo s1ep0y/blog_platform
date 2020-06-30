@@ -43,7 +43,7 @@ const SingleArticle = (props) => {
       return null;
     }
     return (
-      <Link to={`/editarticle/${article.slug}`}>
+      <Link to={`/editarticle/${article.slug}`} onClick={()=> getArticle(slug)}>
         <Button> Edit article</Button>
       </Link>
     )

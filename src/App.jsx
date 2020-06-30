@@ -26,10 +26,10 @@ function App(props) {
               <Login />
             </Route>
             <Route path="/addarticle">
-              <ArticleForm />
+              <ArticleForm  key={uniqueId()}/>
             </Route>
             <Route path="/editarticle/:slug">
-              <ArticleForm />
+              <ArticleForm key={uniqueId()} />
             </Route>
             {props.articles.map((item)=> (
             <Route

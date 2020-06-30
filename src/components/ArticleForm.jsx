@@ -10,32 +10,18 @@ import * as Yup from 'yup';
 import * as actions from '../actions/index';
 
 const AddArticle = (props) => {
-  const { postArticle, loggedIn, username, action, article, errors, getArticle } = props;
+  const { postArticle, loggedIn, username, article, errors, getArticle, ArticleFetchingState } = props;
   const [updatePage, setUpdatePage] = useState(false);
   const history = useHistory();
   const { pathname } = useLocation();
   const { slug } = useParams();
   const [form] = Form.useForm();
 
-  useEffect(() => {
-    if (!loggedIn) history.push('/loggedIn');
-    if(!updatePage){
-    if(pathname.includes('/editarticle/')) {
-      setUpdatePage(true);
-      if(article.slug !== slug) {
-        getArticle(slug)
-        return;
-      }
-      if(article.author.username !== username) {
-        if (!loggedIn) history.push('/');
-      };
-      // form.resetFields();
-    };
-  }
-  if(updatePage) form.setFieldsValue(initialValues);
-  });
+  // useEffect(() => {
+  //   form.resetFields();
+  // })
 
-
+  console.log(pathname.includes('/editarticle/'))
 
   const valShema = Yup
     .object()
@@ -52,10 +38,12 @@ const AddArticle = (props) => {
     });
 
   
-  const initialValues = updatePage ? {title: article.body,
+  const initialValues = pathname.includes('/editarticle/') ? {title: article.title,
     description: article.description,
     body: article.body,}
     :  { title: '', description: '', body: ''}
+
+    // if(updatePage) 
 
   const formik = useFormik({
     initialValues,
@@ -79,8 +67,21 @@ const AddArticle = (props) => {
 
   });
 
-  
 
+  if(pathname.includes('/editarticle/')) {
+    if(ArticleFetchingState === 'requested') {
+      return <p>wait for download</p>
+    }
+    if(article.slug !== slug) {
+      getArticle(slug);
+      return <p>wait for download</p>;
+    }
+    if(article.author.username !== username) {
+      history.push('/')
+    }
+} 
+  
+// form.setFieldsValue(initialValues);
   return (
     <div className="wrapper">
       <Form
@@ -102,7 +103,7 @@ const AddArticle = (props) => {
             : null}
 
         >
-          <Input value={JSON.stringify(formik.values)} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+          <Input onChange={formik.handleChange} onBlur={formik.handleBlur} />
         </Form.Item>
         <Form.Item
           name="description"
@@ -195,10 +196,11 @@ const actionCreators = {
   getArticle: actions.getArticle,
 };
 
-const mapStateToProps = ({ userState, articlesList }) => {
+const mapStateToProps = ({ userState, articlesList, ArticleFetchingState }) => {
   const { article, errors } = articlesList;
+  console.log(article)
   const { loggedIn, user } = userState;
-  if (loggedIn) return { username: user.username, loggedIn, article, errors };
+  if (loggedIn) return { username: user.username, loggedIn, article, errors, ArticleFetchingState };
   return ({ loggedIn });
 };
 

@@ -113,6 +113,12 @@ const postArticleState = handleActions({
 }, { status: 'success', errors: {} });
 
 const articlesList = handleActions({
+  [actions.postArticleFailure](state, { payload }) {
+    return { ...state, errors: payload };
+  },
+  [actions.postArticleSuccess](state, { payload }) {
+    return { ...state, article: payload };
+  },
   [actions.signInSuccess](state, { payload }) {
     return {...state, articles: [] }
   },
