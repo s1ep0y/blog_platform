@@ -9,16 +9,20 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import * as actions from '../actions/index';
+import FormMessage from './FormMessage'
 
 const AddArticle = (props) => {
-  const { postArticle, loggedIn, username, article, errors, getArticle, ArticleFetchingState } = props;
+  const { postArticle, loggedIn, updateArticle,username, article, errors, getArticle, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState } = props;
   const [tagList, setTags] = useState([]);
   const history = useHistory();
   const { pathname } = useLocation();
   const { slug } = useParams();
   const [form] = Form.useForm();
-
   
+
+  if(!loggedIn) {
+    history.push('/login');
+  }
 
   const valShema = Yup
     .object()
@@ -34,8 +38,10 @@ const AddArticle = (props) => {
         .required('Please enter text of article'),
     });
 
+    const page = pathname.includes('/editarticle/') ? 'edit' : 'post'
+    const status = page === 'edit' ? updateArticleFetchingState : PostArticleFetchingState
   
-  const initialValues = pathname.includes('/editarticle/') ? {title: article.title,
+  const initialValues = page === 'edit' && loggedIn ? {title: article.title,
     description: article.description,
     body: article.body,
     tag: '',}
@@ -50,16 +56,24 @@ const AddArticle = (props) => {
     validateOnBlur: true,
     validationSchema: valShema,
     onSubmit: async (values) => {
-      const article = {
+      const articleToSend = {
         ...values, tagList
       }
-      postArticle(article);
+      if(page === 'post') {
+        postArticle(articleToSend);
+      } else {
+        updateArticle(articleToSend, slug)
+      }
     },
 
   });
 
 
-  if(pathname.includes('/editarticle/')) {
+  if(page === 'edit') {
+    if(!loggedIn) {
+      history.push('/login');
+      return null;
+    }
     if(ArticleFetchingState === 'requested') {
       return <p>wait for download</p>
     }
@@ -165,11 +179,11 @@ console.log(tagList)
               closable={true} onClose={removeTagFromList(text)}>{text}</Tag>)}</div>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            Add Article
+            {page === 'edit' ? 'Save Changes' : 'Post Article'}
           </Button>
         </Form.Item>
       </Form>
-      {/* {msg()} */}
+      {FormMessage(status, page, errors)}
     </div>
   );
 };
@@ -177,12 +191,13 @@ console.log(tagList)
 const actionCreators = {
   postArticle: actions.postArticle,
   getArticle: actions.getArticle,
+  updateArticle: actions.updateArticle,
 };
 
-const mapStateToProps = ({ userState, articlesList, ArticleFetchingState }) => {
+const mapStateToProps = ({ userState, articlesList, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState }) => {
   const { article, errors } = articlesList;
   const { loggedIn, user } = userState;
-  if (loggedIn) return { username: user.username, loggedIn, article, errors, ArticleFetchingState };
+  if (loggedIn) return { username: user.username, loggedIn, article, errors, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState };
   return ({ loggedIn });
 };
 

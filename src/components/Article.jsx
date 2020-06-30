@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import {
-  Button, Card, Tag,
+  Button, Card, Tag, message
 } from 'antd';
 import { Link } from 'react-router-dom';
 import { HeartTwoTone } from '@ant-design/icons';
@@ -26,13 +26,12 @@ const dateDistance = (date) => {
 
 
 const SingleArticle = (props) => {
-  console.log(props)
   const { status, getArticle, username ,article, loggedIn, favoriteControl, favState } = props;
   const { slug } = useParams()
   const likeControl = () => (e) => {
     e.preventDefault();
     if (!loggedIn) {
-      alert('need to loign');
+      message.error('Please login to do it');
       return;
     }
     favoriteControl(article.slug, article.favorited);
@@ -100,7 +99,6 @@ const mapStateToProps = ({ userState, articlesList, ArticleFetchingState, favori
   if(Object.keys(article).length === 0) {
     return {status: 'none'}
   }
-  console.log(status)
   if (status === 'finished') {
     if (loggedIn) {
       return {

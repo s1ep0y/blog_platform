@@ -8,14 +8,11 @@ import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
+import FormMessage from './FormMessage'
 import * as actions from '../actions/index';
 
 const SignUp = (props) => {
-  const history = useHistory();
-  const { status, resErrors, register } = props;
-  const redirectToLogin = () => {
-    history.push('/login');
-  };
+  const { status, errors, register } = props;
 
   const valShema = Yup
     .object()
@@ -53,38 +50,10 @@ const SignUp = (props) => {
     },
   });
 
-  const msg = () => {
-    if (status === '') {
-      return null;
-    }
-    if (status === 'success') {
-      return (
-        <p className="successText">
-          You register in succesfull, you be redirect to sign in page
-          {' '}
-          <br />
-          If you arent,
-          {' '}
-          <Link to="/login">click here</Link>
-        </p>
-      );
-    }
-    return (
-      <ul className="errorText">
-        { Object.entries(resErrors).map(([errKey, value]) => (
-          <li key={uniqueId()}>
-            {errKey}
-            {' '}
-
-            {value}
-          </li>
-        ))}
-      </ul>
-    );
-  };
+  
 
   const signUpForm = () => {
-    const { errors, touched, handleSubmit } = formik;
+    const {  touched, handleSubmit } = formik;
     return (
       <div className="wrapper">
         <Form onFinish={handleSubmit}>
@@ -92,11 +61,11 @@ const SignUp = (props) => {
             label="Name"
             name="username"
             className="requred"
-            validateStatus={errors.name && touched.name
+            validateStatus={formik.errors.name && touched.name
               ? 'error'
               : 'success'}
-            help={errors.name && touched.name
-              ? errors.name
+            help={formik.errors.name && touched.name
+              ? formik.errors.name
               : null}
           >
 
@@ -107,11 +76,11 @@ const SignUp = (props) => {
             name="password"
             label="Password"
             className="requred"
-            validateStatus={errors.password && touched.password
+            validateStatus={formik.errors.password && touched.password
               ? 'error'
               : 'success'}
-            help={errors.password && touched.password
-              ? errors.password
+            help={formik.errors.password && touched.password
+              ? formik.errors.password
               : null}
           >
             <Input.Password onBlur={formik.handleBlur} onChange={formik.handleChange} />
@@ -120,11 +89,11 @@ const SignUp = (props) => {
             name="email"
             label="Email"
             className="requred"
-            validateStatus={errors.email && touched.email
+            validateStatus={formik.errors.email && touched.email
               ? 'error'
               : 'success'}
-            help={errors.email && touched.email
-              ? errors.email
+            help={formik.errors.email && touched.email
+              ? formik.errors.email
               : null}
           >
             <Input onChange={formik.handleChange} onBlur={formik.handleBlur} />
@@ -135,8 +104,7 @@ const SignUp = (props) => {
             </Button>
           </Form.Item>
         </Form>
-
-        {msg()}
+        {FormMessage(status, 'Sign Up', errors)}
       </div>
     );
   };
@@ -151,21 +119,19 @@ const actionCreators = {
   register: actions.signUp,
 };
 
-const mapStateToProps = ({ signUpState }) => {
-  const { status } = signUpState;
-  if (status === 'fail') return { status, resErrors: signUpState.errors };
-  return { status };
+const mapStateToProps = ({ signUpState, SignUpFetchingState }) => {
+  return { status: SignUpFetchingState, errors: signUpState.errors };
 };
 
 SignUp.defaultProps = {
   status: '',
-  resErrors: {},
+  errors: {},
   register: () => {},
 };
 
 SignUp.propTypes = {
   status: PropTypes.string,
-  resErrors: PropTypes.objectOf(PropTypes.any),
+  errors: PropTypes.objectOf(PropTypes.any),
   register: PropTypes.func,
 };
 

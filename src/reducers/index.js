@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
-
 import * as actions from '../actions';
 import { act } from 'react-dom/test-utils';
 
@@ -64,6 +63,18 @@ const ArticleFetchingState = handleActions({
   },
 }, 'none');
 
+const updateArticleFetchingState = handleActions({
+  [actions.updateArticleRequest]() {
+    return 'requested';
+  },
+  [actions.updateArticleSuccess]() {
+    return 'finished';
+  },
+  [actions.updateArticleFailure]() {
+    return 'failed';
+  },
+}, 'none');
+
 const fetchArticlesListState = handleActions({
   [actions.fetchArticlesListRequest]() {
     return 'requested';
@@ -116,8 +127,14 @@ const articlesList = handleActions({
   [actions.postArticleFailure](state, { payload }) {
     return { ...state, errors: payload };
   },
+  [actions.updateArticleFailure](state, { payload }) {
+    return { ...state, errors: payload };
+  },
   [actions.postArticleSuccess](state, { payload }) {
-    return { ...state, article: payload };
+    return { ...state, article: payload, articles: [] };
+  },
+  [actions.updateArticleSuccess](state, { payload }) {
+    return { ...state, article: payload, articles: [] };
   },
   [actions.signInSuccess](state, { payload }) {
     return {...state, articles: [] }
@@ -176,6 +193,7 @@ const articlesList = handleActions({
 
 
 export default combineReducers({
+  updateArticleFetchingState,
   SignInFetchingState,
   favoriteControlState,
   SignUpFetchingState,

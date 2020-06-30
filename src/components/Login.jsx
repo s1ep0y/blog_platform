@@ -1,22 +1,20 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { uniqueId } from 'lodash';
 import { useFormik } from 'formik';
 import {
   Form, Input, Button,
 } from 'antd';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import * as actions from '../actions/index';
+import FormMessage from './FormMessage'
 
 const SignIn = (props) => {
-  const { status, resErrors, login } = props;
+  const { status, errors, login, loggedIn } = props;
   const history = useHistory();
-  // const redirectToLogin = () => {
-  //   history.push('/signup');
-  // };
-
+  
+  if(loggedIn) history.push('/');
 
   const valShema = Yup
     .object()
@@ -47,41 +45,8 @@ const SignIn = (props) => {
     },
   });
 
-  const msg = () => {
-    if (status === '') {
-      return null;
-    }
-    if (status === 'finished') {
-      setTimeout(() => {
-        history.push('/');
-      }, 3000);
-      return (
-        <p className="successText">
-          Login in succesfull, you will be redirect to index
-          {' '}
-          <br />
-          If you arent,
-          {' '}
-          <Link to="/">click here</Link>
-        </p>
-      );
-    }
-    return (
-      <ul className="errorText">
-        { Object.entries(resErrors).map(([errKey, value]) => (
-          <li key={uniqueId()}>
-            {errKey}
-            {' '}
-            :
-            {value}
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
-  const loginForm = () => {
-    const { errors, touched, handleSubmit } = formik;
+    const loginForm = () => {
+    const { touched, handleSubmit } = formik;
     return (
       <div className="wrapper">
         <Form onFinish={handleSubmit}>
@@ -90,11 +55,11 @@ const SignIn = (props) => {
             name="email"
             label="Email"
             className="requred"
-            validateStatus={errors.email && touched.email
+            validateStatus={formik.errors.email && touched.email
               ? 'error'
               : 'success'}
-            help={errors.email && touched.email
-              ? errors.email
+            help={formik.errors.email && touched.email
+              ? formik.errors.email
               : null}
           >
             <Input onChange={formik.handleChange} onBlur={formik.handleBlur} />
@@ -104,11 +69,11 @@ const SignIn = (props) => {
             name="password"
             label="Password"
             className="requred"
-            validateStatus={errors.password && touched.password
+            validateStatus={formik.errors.password && touched.password
               ? 'error'
               : 'success'}
-            help={errors.password && touched.password
-              ? errors.password
+            help={formik.errors.password && touched.password
+              ? formik.errors.password
               : null}
           >
             <Input.Password onBlur={formik.handleBlur} onChange={formik.handleChange} />
@@ -119,7 +84,7 @@ const SignIn = (props) => {
             </Button>
           </Form.Item>
         </Form>
-        {msg()}
+        {FormMessage(status, 'Login', errors)}
       </div>
     );
   };
@@ -134,21 +99,19 @@ const actionCreators = {
 };
 
 const mapStateToProps = ({ userState, SignInFetchingState }) => {
-  console.log(SignInFetchingState)
-  const { status } = userState;
-  if (SignInFetchingState === 'failed') return { status, resErrors: userState.errors };
-  return { status };
+  return { status: SignInFetchingState, errors: userState.errors, loggedIn: userState.loggedIn };
+  
 };
 
 SignIn.defaultProps = {
   status: '',
-  resErrors: {},
+  errors: {},
   login: () => {},
 };
 
 SignIn.propTypes = {
   status: PropTypes.string,
-  resErrors: PropTypes.objectOf(PropTypes.any),
+  errors: PropTypes.objectOf(PropTypes.any),
   login: PropTypes.func,
 };
 

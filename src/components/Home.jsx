@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { uniqueId } from 'lodash';
 import {
-  Pagination,
+  Pagination, message
 } from 'antd';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -27,7 +27,6 @@ const Home = (props) => {
   }
   
   if(articles.length === 0) {
-    console.log(currentPage)
     fetchArticles({
       offset: (currentPage - 1)*10,
       limit: 10,
@@ -45,14 +44,14 @@ const Home = (props) => {
 
 
   if(fetchArticlesListState === 'failed') {
-    return <div>Something went wrong</div>;
+    return <div>Something went wrong. Please, reload page</div>;
   }
 
 
   const likeControl = (slug, favorited) => (e) => {
     e.preventDefault();
     if (!login) {
-      alert('need to loign');
+      message.error('Please login to do it');
       return;
     }
     favoriteControl(slug, favorited);

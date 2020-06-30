@@ -16,6 +16,10 @@ export const postArticleRequest = createAction('POST_ARTICLE_REQUEST');
 export const postArticleSuccess = createAction('POST_ARTICLE_SUCCESS');
 export const postArticleFailure = createAction('POST_ARTICLE_FAILURE');
 
+export const updateArticleRequest = createAction('UPDATE_ARTICLE_REQUEST');
+export const updateArticleSuccess = createAction('UPDATE_ARTICLE_SUCCESS');
+export const updateArticleFailure = createAction('UPDATE_ARTICLE_FAILURE');
+
 export const fetchArticlesListRequest = createAction('FETCH_ARTICLES_LIST_REQUEST');
 export const fetchArticlesListSuccess = createAction('FETCH_ARTICLES_LIST_SUCCESS');
 export const fetchArticlesListFailure = createAction('FETCH_ARTICLES_LIST_FAILURE');
@@ -42,16 +46,29 @@ export const handleLogOut = () => (dispatch) => {
   dispatch(LogOut())
 }
 
+export const updateArticle = (article, slug) => async (dispatch, getState) => {
+  const { userState: { user } } = getState();
+  dispatch(updateArticleRequest());
+  try {
+    const { data } = await axios.put(apiRoutes.oneArticle(slug),
+      { article: { ...article, tagList: article.tagList } },
+      { headers: { Authorization: `Token ${user.token}` } });
+    dispatch(updateArticleSuccess(data));
+  } catch (error) {
+    dispatch(updateArticleFailure(error.response.data.errors));
+    console.error(error);
+  }
+};
 export const getArticle = (slug) => async (dispatch, getState) => {
   dispatch(getArticleRequest());
   const { userState } = getState();
   try {
     const headers = userState.loggedIn ? { Authorization: `Token ${userState.user.token}`} : {}
     const { data } = await axios.get(apiRoutes.oneArticle(slug), { headers })
-    console.log(data)
     dispatch(getArticleSuccess(data.article))
   } catch (error) {
-    console.log(error)
+    dispatch(getArticleFailure(error.response.data.errors))
+    console.error(error)
   }
 }
 
@@ -69,9 +86,9 @@ export const favoriteControl = (slug, favorited) => async (dispatch, getState) =
     const { data } = await axios.post(apiRoutes.favArticle(slug), {}, { headers: { Authorization: `Token ${user.token}` }, data: {} });
     dispatch(FavoriteControlSuccess(data.article));
     return;
-  } catch (e) {
-    dispatch(FavoriteControlFailure())
-    console.log(e);
+  } catch (error) {
+    dispatch(FavoriteControlFailure(error.response.data.errors))
+    console.error(error);
   }
 };
 
@@ -83,9 +100,10 @@ export const postArticle = (article) => async (dispatch, getState) => {
       { article: { ...article, tagList: article.tagList } },
       { headers: { Authorization: `Token ${user.token}` } });
     dispatch(postArticleSuccess(data));
-  } catch ({ response }) {
-    dispatch(postArticleFailure(response.data.errors));
-    console.log(response);
+  } catch (error) {
+    dispatch(postArticleFailure(error.response.data.errors));
+    console.error(error);
+    
   }
 };
 
@@ -98,7 +116,7 @@ export const fetchArticles = (params = {}) => async (dispatch, getState) => {
     const { data } = await axios.get(apiRoutes.articles('?' + queries), {headers});
     dispatch(fetchArticlesListSuccess(data))
   } catch (error) {
-    console.log(error)
+    console.error(error)
     dispatch(fetchArticlesListFailure(error.response.data.errors));
   }
 };
@@ -117,11 +135,8 @@ export const signUp = (vals) => async (dispatch) => {
   dispatch(signUpRequest());
   try {
     const { data } = await axios.post(apiRoutes.users(), vals);
-    console.log(data);
     dispatch(signUpSuccess(data));
   } catch ({ response }) {
     dispatch(signUpFailure(response.data.errors));
   }
 };
-
-// const data = await axios.post('https://conduit.productionready.io/api/users', valsPrepared);
