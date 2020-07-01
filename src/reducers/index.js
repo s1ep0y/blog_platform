@@ -23,7 +23,7 @@ const SignUpFetchingState = handleActions({
     return 'failed';
   },
   [actions.signUpSuccess]() {
-    return 'success';
+    return 'finished';
   },
 }, 'none');
 
@@ -35,7 +35,7 @@ const favoriteControlState = handleActions({
     return 'failed';
   },
   [actions.FavoriteControlSuccess]() {
-    return 'success';
+    return 'finished';
   },
 }, 'none');
 
@@ -44,7 +44,7 @@ const PostArticleFetchingState = handleActions({
     return 'requested';
   },
   [actions.postArticleSuccess]() {
-    return 'success';
+    return 'finished';
   },
   [actions.postArticleFailure]() {
     return 'failed';
@@ -131,10 +131,10 @@ const articlesList = handleActions({
     return { ...state, errors: payload };
   },
   [actions.postArticleSuccess](state, { payload }) {
-    return { ...state, article: payload, articles: [] };
+    return { ...state, article: payload.article, articles: [] };
   },
   [actions.updateArticleSuccess](state, { payload }) {
-    return { ...state, article: payload, articles: [] };
+    return { ...state, article: payload.article, articles: [] };
   },
   [actions.signInSuccess](state, { payload }) {
     return {...state, articles: [] }

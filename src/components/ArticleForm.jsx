@@ -14,6 +14,8 @@ import FormMessage from './FormMessage'
 const AddArticle = (props) => {
   const { postArticle, loggedIn, updateArticle,username, article, errors, getArticle, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState } = props;
   const [tagList, setTags] = useState([]);
+  const [updated, setUpdatedState] = useState(false);
+  const [sended, setSended] = useState(false)
   const history = useHistory();
   const { pathname } = useLocation();
   const { slug } = useParams();
@@ -24,7 +26,7 @@ const AddArticle = (props) => {
     history.push('/login');
   }
 
-  const valShema = Yup
+  const valShemaPost = Yup
     .object()
     .shape({
       title: Yup
@@ -38,23 +40,37 @@ const AddArticle = (props) => {
         .required('Please enter text of article'),
     });
 
+    const valShemaEdit = Yup
+    .object()
+    .shape({
+      title: Yup
+        .string()
+        ,
+      description: Yup
+        .string()
+        ,
+      body: Yup
+        .string()
+        ,
+    });
+
     const page = pathname.includes('/editarticle/') ? 'edit' : 'post'
     const status = page === 'edit' ? updateArticleFetchingState : PostArticleFetchingState
   
+    
+
   const initialValues = page === 'edit' && loggedIn ? {title: article.title,
     description: article.description,
     body: article.body,
     tag: '',}
     :  { title: '', description: '', body: '', tag: ''}
 
-    // if(updatePage) 
-
   const formik = useFormik({
     initialValues,
     enableReinitialize: true,
     validateOnChange: false,
     validateOnBlur: true,
-    validationSchema: valShema,
+    validationSchema: page === 'edit' ? valShemaEdit : valShemaPost,
     onSubmit: async (values) => {
       const articleToSend = {
         ...values, tagList
@@ -64,10 +80,15 @@ const AddArticle = (props) => {
       } else {
         updateArticle(articleToSend, slug)
       }
+      setSended(true)
     },
-
   });
-
+  console.log(status, sended)
+  useEffect(()=> {
+    if(status === 'finished' && sended){
+      history.push('/')
+    }
+  })
 
   if(page === 'edit') {
     if(!loggedIn) {
@@ -77,15 +98,19 @@ const AddArticle = (props) => {
     if(ArticleFetchingState === 'requested') {
       return <p>wait for download</p>
     }
-    if(article.slug !== slug) {
-      getArticle(slug);
-      return <p>wait for download</p>;
+    if(!updated){
+      if(article.slug !== slug) {
+        getArticle(slug);
+        return <p>wait for slug</p>;
+      }
+      setUpdatedState(true)
     }
     if(article.author.username !== username) {
       history.push('/')
     }
     if(article.tagList.length !== 0 && tagList.length === 0) {
       setTags(article.tagList)
+      article.tagList=[];
     }
 } 
 
@@ -115,7 +140,6 @@ console.log(tagList)
         form={form}
        
       >
-        {JSON.stringify(formik.values)}
         <Form.Item
           name="title"
           

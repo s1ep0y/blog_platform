@@ -15,6 +15,8 @@ const SignIn = (props) => {
   const history = useHistory();
   
   if(loggedIn) history.push('/');
+  if(status === 'finished') history.push('/');
+  
 
   const valShema = Yup
     .object()

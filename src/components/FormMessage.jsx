@@ -4,12 +4,8 @@ import { uniqueId } from 'lodash';
 import { useHistory, Link } from 'react-router-dom';
 
 const FormMessage = (status, action, errors) => {
-  const history = useHistory();
   switch (status) {
-    case 'success':
-      setTimeout(() => {
-        history.push('/');
-      }, 100);
+    case 'finished':
         return (
           <p className="successText">
             {action} in succesfull, you will be redirect to index

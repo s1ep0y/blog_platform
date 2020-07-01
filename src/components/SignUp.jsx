@@ -4,15 +4,19 @@ import { uniqueId } from 'lodash';
 import {
   Form, Input, Button,
 } from 'antd';
-import { useHistory, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import FormMessage from './FormMessage'
 import * as actions from '../actions/index';
+import { useHistory } from 'react-router';
 
 const SignUp = (props) => {
   const { status, errors, register } = props;
+  
+  const history = useHistory();
+  
+  if(status === 'finished') history.push('/');
 
   const valShema = Yup
     .object()
