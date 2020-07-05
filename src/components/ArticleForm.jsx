@@ -12,10 +12,10 @@ import * as actions from '../actions/index';
 import FormMessage from './FormMessage'
 
 const AddArticle = (props) => {
-  const { postArticle, loggedIn, updateArticle,username, article, errors, getArticle, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState } = props;
+  const { postArticle, dropSendedState,sendedState,loggedIn, updateArticle,username, article, errors, getArticle, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState } = props;
   const [tagList, setTags] = useState([]);
   const [updated, setUpdatedState] = useState(false);
-  const [sended, setSended] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const history = useHistory();
   const { pathname } = useLocation();
   const { slug } = useParams();
@@ -80,15 +80,18 @@ const AddArticle = (props) => {
       } else {
         updateArticle(articleToSend, slug)
       }
-      setSended(true)
     },
   });
-  console.log(status, sended)
   useEffect(()=> {
-    if(status === 'finished' && sended){
-      history.push('/')
+    if(!loaded) {
+      setLoaded(true)
+      dropSendedState()
+    }
+    if(status === 'finished' && sendedState){
+      history.push('/articles/'+ article.slug)
     }
   })
+  
 
   if(page === 'edit') {
     if(!loggedIn) {
@@ -216,12 +219,13 @@ const actionCreators = {
   postArticle: actions.postArticle,
   getArticle: actions.getArticle,
   updateArticle: actions.updateArticle,
+  dropSendedState: actions.dropSendedState,
 };
 
-const mapStateToProps = ({ userState, articlesList, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState }) => {
+const mapStateToProps = ({ userState, articlesList, sendedState,ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState }) => {
   const { article, errors } = articlesList;
   const { loggedIn, user } = userState;
-  if (loggedIn) return { username: user.username, loggedIn, article, errors, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState };
+  if (loggedIn) return { sendedState, username: user.username, loggedIn, article, errors, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState };
   return ({ loggedIn });
 };
 

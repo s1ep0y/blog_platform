@@ -123,6 +123,18 @@ const postArticleState = handleActions({
   },
 }, { status: 'success', errors: {} });
 
+const sendedState = handleActions({
+  [actions.updateArticleSuccess]() {
+    return true;
+  },
+  [actions.postArticleSuccess]() {
+    return true;
+  },
+  [actions.dropSendedState](){
+    return false;
+  },
+}, false)
+
 const articlesList = handleActions({
   [actions.postArticleFailure](state, { payload }) {
     return { ...state, errors: payload };
@@ -204,4 +216,5 @@ export default combineReducers({
   articlesList,
   userState,
   signUpState,
+  sendedState
 });
