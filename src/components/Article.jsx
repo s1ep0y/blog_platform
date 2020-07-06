@@ -7,7 +7,7 @@ import { HeartTwoTone } from '@ant-design/icons';
 import { uniqueId } from 'lodash';
 import PropTypes from 'prop-types';
 import { differenceInMilliseconds, formatDuration } from 'date-fns';
-import * as actions from '../actions/index';
+import * as actions from '../actions/articles';
 import { connect } from 'react-redux';
 import {
   useParams
@@ -26,7 +26,7 @@ const dateDistance = (date) => {
 
 
 const SingleArticle = (props) => {
-  const { status, getArticle, username ,article, loggedIn, favoriteControl, favState } = props;
+  const { status, getArticle, username ,article, loggedIn, favoriteControl } = props;
   const { slug } = useParams()
   const likeControl = () => (e) => {
     e.preventDefault();
@@ -65,7 +65,7 @@ const SingleArticle = (props) => {
           {' '}
           ago
         </p>
-        <Button type="text" onClick={likeControl()} disabled={ favState === 'requested'}>
+        <Button type="text" onClick={likeControl()} >
           <HeartTwoTone style={{ fontSize: 18 }} twoToneColor={article.favorited ? 'lightgreen' : 'lightgrey'} />
           {' '}
           {article.favoritesCount}
@@ -91,22 +91,22 @@ const actionCreators = {
   favoriteControl: actions.favoriteControl,
 };
 
-const mapStateToProps = ({ userState, articlesList, ArticleFetchingState, favoriteControlState }) => {
+const mapStateToProps = ({ userReducers, articleReducers: {articlesList, ArticleFetchingState, favoriteControlState }}) => {
 
   const status = ArticleFetchingState;
   const { article } = articlesList;
-  const { loggedIn, user } = userState
+  const { loggedIn, user } = userReducers.userState
   if(Object.keys(article).length === 0) {
     return {status: 'none'}
   }
   if (status === 'finished') {
     if (loggedIn) {
       return {
-        loggedIn, username: user.username ,article, status, favState: favoriteControlState,
+        loggedIn, username: user.username ,article, status,
       };
     }
     return {
-      status, article, loggedIn, favState: favoriteControlState,
+      status, article, loggedIn, 
     };
   }
   return {
@@ -114,6 +114,14 @@ const mapStateToProps = ({ userState, articlesList, ArticleFetchingState, favori
   };
 };
 
+SingleArticle.defaultProps = {
+  status: '', getArticle: () => {}, username: '' ,article: {}, loggedIn: false, favoriteControl: () => {},
+};
+
+SingleArticle.propTypes = {
+  status: PropTypes.string, getArticle: PropTypes.func, username: PropTypes.string , loggedIn: PropTypes.bool, favoriteControl: PropTypes.func, 
+  article: PropTypes.objectOf(PropTypes.any),
+};
 
 export default connect(mapStateToProps, actionCreators)(SingleArticle);
 

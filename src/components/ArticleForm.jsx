@@ -8,7 +8,7 @@ import { uniqueId } from 'lodash';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
-import * as actions from '../actions/index';
+import * as actions from '../actions/articles';
 import FormMessage from './FormMessage'
 
 const AddArticle = (props) => {
@@ -90,7 +90,7 @@ const AddArticle = (props) => {
     if(status === 'finished' && sendedState){
       history.push('/articles/'+ article.slug)
     }
-  })
+  }, [loaded, status, sendedState, dropSendedState, history, article.slug])
   
 
   if(page === 'edit') {
@@ -133,8 +133,6 @@ const removeTagFromList = (val) => (e) => {
   e.preventDefault()
   setTags(tagList.filter((elem) => elem !== val))
 }
-  
-console.log(tagList)
   return (
     <div className="wrapper">
       <Form
@@ -210,7 +208,7 @@ console.log(tagList)
           </Button>
         </Form.Item>
       </Form>
-      {FormMessage(status, page, errors)}
+      {FormMessage(status, errors)}
     </div>
   );
 };
@@ -222,9 +220,9 @@ const actionCreators = {
   dropSendedState: actions.dropSendedState,
 };
 
-const mapStateToProps = ({ userState, articlesList, sendedState,ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState }) => {
+const mapStateToProps = ({ userReducers, articleReducers: {articlesList, sendedState,ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState} }) => {
   const { article, errors } = articlesList;
-  const { loggedIn, user } = userState;
+  const { loggedIn, user } = userReducers.userState;
   if (loggedIn) return { sendedState, username: user.username, loggedIn, article, errors, ArticleFetchingState, updateArticleFetchingState, PostArticleFetchingState };
   return ({ loggedIn });
 };

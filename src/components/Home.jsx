@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { uniqueId } from 'lodash';
 import {
   Pagination, message
@@ -6,7 +6,7 @@ import {
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import * as actions from '../actions/index';
+import * as actions from './../actions/articles';
 import ArticleListItem from './ArticleListItem';
 import {Loading3QuartersOutlined} from '@ant-design/icons';
 
@@ -86,8 +86,8 @@ const actionCreators = {
   paginationControl: actions.paginationControl,
 };
 
-const mapStateToProps = ({ articlesList, userState, fetchArticlesListState, favoriteControlState }) => {
-  const { articles, articlesCount,  favoritedSlugs, currentPage} = articlesList;
+const mapStateToProps = ({ articleReducers: {articlesList , fetchArticlesListState, favoriteControlState }, userReducers: {userState}}) => {
+  const { articles, articlesCount, currentPage} = articlesList;
   if (fetchArticlesListState === 'success'){
     if (userState.loggedIn) {
       return {
@@ -113,7 +113,6 @@ Home.defaultProps = {
 
 Home.propTypes = {
   articles: PropTypes.array,
-  articlesCount: PropTypes.number,
   articlesCount: PropTypes.number,
   getArticle: PropTypes.func,
   fetchArticles: PropTypes.func,

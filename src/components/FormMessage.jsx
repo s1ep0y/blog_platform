@@ -8,6 +8,7 @@ const FormMessage = (status, errors) => {
         return null;
       
     case 'failed':
+      console.log(errors)
       return (
         <ul className="errorText">
           { Object.entries(errors).map(([errKey, value]) => (

@@ -7,7 +7,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
-import * as actions from '../actions/index';
+import * as actions from '../actions/user';
 import FormMessage from './FormMessage'
 
 const SignIn = (props) => {
@@ -46,6 +46,7 @@ const SignIn = (props) => {
       login(valsPrepared);
     },
   });
+
 
     const loginForm = () => {
     const { touched, handleSubmit } = formik;
@@ -86,7 +87,7 @@ const SignIn = (props) => {
             </Button>
           </Form.Item>
         </Form>
-        {FormMessage(status, 'Login', errors)}
+        {FormMessage(status, errors)}
       </div>
     );
   };
@@ -100,8 +101,8 @@ const actionCreators = {
   login: actions.signIn,
 };
 
-const mapStateToProps = ({ userState, SignInFetchingState }) => {
-  return { status: SignInFetchingState, errors: userState.errors, loggedIn: userState.loggedIn };
+const mapStateToProps = ({ userReducers }) => {
+  return { status: userReducers.SignInFetchingState, errors: userReducers.userState.errors, loggedIn: userReducers.userState.loggedIn };
   
 };
 

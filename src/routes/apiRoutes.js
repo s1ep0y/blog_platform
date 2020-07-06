@@ -1,5 +1,3 @@
-import { queries } from '@testing-library/react';
-
 const baseApi = 'https://conduit.productionready.io/api';
 
 export default {

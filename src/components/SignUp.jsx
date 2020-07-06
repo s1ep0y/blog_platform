@@ -1,6 +1,5 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import { uniqueId } from 'lodash';
 import {
   Form, Input, Button,
 } from 'antd';
@@ -8,7 +7,7 @@ import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
 import FormMessage from './FormMessage'
-import * as actions from '../actions/index';
+import * as actions from '../actions/user';
 import { useHistory } from 'react-router';
 
 const SignUp = (props) => {

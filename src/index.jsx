@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 import reducers from './reducers/index.js'
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
-import * as actions from './actions';
+import * as actions from './actions/user';
 
 /* eslint-disable no-underscore-dangle */
 const ext = window.__REDUX_DEVTOOLS_EXTENSION__;

@@ -55,8 +55,8 @@ function App(props) {
   );
 }
 
-const mapStateToProps = ({ articlesList }) => {
-  const { articles, allCount, loadedCount } = articlesList;
+const mapStateToProps = ({ articleReducers }) => {
+  const { articles, allCount, loadedCount } = articleReducers.articlesList;
   return {
     articles, allCount, loadedCount
   }

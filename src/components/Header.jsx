@@ -6,7 +6,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import * as actions from '../actions/index';
+import * as actions from '../actions/user';
 
 
 const Header = (props) => {
@@ -14,7 +14,7 @@ const Header = (props) => {
 
   const toHome = () => {history.push('/')};
 
-  const { login, username, logout, addArticle } = props;
+  const { login, username, logout } = props;
   const buttonsLayout = login
     ? [(<Button key={3} onClick={logout}>
     Log Out
@@ -46,8 +46,8 @@ const Header = (props) => {
   );
 };
 
-const mapStateToProps = ({ userState }) => {
-  const { loggedIn, user } = userState;
+const mapStateToProps = ({ userReducers }) => {
+  const { loggedIn, user } = userReducers.userState;
   if (loggedIn) {
     return {
       username: user.username, login: true,
