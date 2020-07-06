@@ -1,18 +1,17 @@
 import React from 'react';
 import { uniqueId } from 'lodash';
 import {
-  Pagination, message
+  Pagination, message,
 } from 'antd';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import * as actions from './../actions/articles';
+import { Loading3QuartersOutlined } from '@ant-design/icons';
+import * as actions from '../actions/articles';
 import ArticleListItem from './ArticleListItem';
-import {Loading3QuartersOutlined} from '@ant-design/icons';
 
 
 const Home = (props) => {
-  
   const {
     paginationControl,
     fetchArticlesListState,
@@ -22,34 +21,33 @@ const Home = (props) => {
     articlesCount, login, favoriteControl, fetchArticles,
   } = props;
 
-  if(fetchArticlesListState === 'requested') {
-    return <div><Loading3QuartersOutlined spin style={{ fontSize: 48 }}/></div>;
+  if (fetchArticlesListState === 'requested') {
+    return <div><Loading3QuartersOutlined spin style={{ fontSize: 48 }} /></div>;
   }
-  
-  if(articles.length === 0) {
+
+  if (articles.length === 0) {
     fetchArticles({
-      offset: (currentPage - 1)*10,
+      offset: (currentPage - 1) * 10,
       limit: 10,
     });
   }
 
   const paginationHandler = (page) => {
     fetchArticles({
-      offset: (page - 1)*10,
+      offset: (page - 1) * 10,
       limit: 10,
     });
-    paginationControl(page)
-  }
+    paginationControl(page);
+  };
 
 
-
-  if(fetchArticlesListState === 'failed') {
+  if (fetchArticlesListState === 'failed') {
     return <div>Something went wrong. Please, reload page</div>;
   }
 
 
-  const likeControl = (slug, favorited) => (e) => {
-    e.preventDefault();
+  const likeControl = (slug, favorited) => (event) => {
+    event.preventDefault();
     if (!login) {
       message.error('Please login to do it');
       return;
@@ -64,7 +62,7 @@ const Home = (props) => {
         date={item.createdAt}
         tags={item.tagList}
         likes={item.favoritesCount}
-        
+        body={item.body}
         likeByUser={item.favorited}
         likeControl={likeControl(item.slug, item.favorited)}
       />
@@ -74,7 +72,12 @@ const Home = (props) => {
   return (
     <div className="wrapper">
       {articlesPrepared}
-      <Pagination total={articlesCount} pageSize={10} current={currentPage} onChange={paginationHandler}/>
+      <Pagination
+        total={articlesCount}
+        pageSize={10}
+        current={currentPage}
+        onChange={paginationHandler}
+      />
     </div>
   );
 };
@@ -86,37 +89,52 @@ const actionCreators = {
   paginationControl: actions.paginationControl,
 };
 
-const mapStateToProps = ({ articleReducers: {articlesList , fetchArticlesListState, favoriteControlState }, userReducers: {userState}}) => {
-  const { articles, articlesCount, currentPage} = articlesList;
-  if (fetchArticlesListState === 'success'){
+const mapStateToProps = ({
+  articleReducers:
+  { articlesState, fetchArticlesListState, favoriteControlState },
+  userReducers: { userState },
+}) => {
+  const { articles, articlesCount, currentPage } = articlesState;
+  if (fetchArticlesListState === 'success') {
     if (userState.loggedIn) {
       return {
-        login: true, articles, articlesCount, currentPage, fetchArticlesListState, favoriteControlState
+        login: true,
+        articles,
+        articlesCount,
+        currentPage,
+        fetchArticlesListState,
+        favoriteControlState,
       };
     }
     return {
-      articles, articlesCount,  currentPage, fetchArticlesListState
+      articles, articlesCount, currentPage, fetchArticlesListState,
     };
   }
-  return {fetchArticlesListState, currentPage};
+  return { fetchArticlesListState, currentPage };
 };
 
 Home.defaultProps = {
   login: false,
   articles: [],
-  allCount: 0,
   articlesCount: 0,
   getArticle: () => {},
   fetchArticles: () => {},
   favoriteControl: () => {},
+  paginationControl: () => {},
+  fetchArticlesListState: '',
+  currentPage: 0,
 };
 
 Home.propTypes = {
-  articles: PropTypes.array,
+  articles: PropTypes.arrayOf(PropTypes.any),
   articlesCount: PropTypes.number,
   getArticle: PropTypes.func,
   fetchArticles: PropTypes.func,
   favoriteControl: PropTypes.func,
+  fetchArticlesListState: PropTypes.string,
+  currentPage: PropTypes.number,
+  login: PropTypes.bool,
+  paginationControl: PropTypes.func,
 };
 
 export default connect(mapStateToProps, actionCreators)(Home);

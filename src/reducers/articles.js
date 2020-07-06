@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import { handleActions } from 'redux-actions';
 import * as actions from '../actions/articles';
-import { signInSuccess, LogOut} from '../actions/user'
+import { signInSuccess, LogOut } from '../actions/user';
 
 const favoriteControlState = handleActions({
   [actions.FavoriteControlRequest]() {
@@ -80,12 +80,13 @@ const sendedState = handleActions({
   [actions.postArticleSuccess]() {
     return true;
   },
-  [actions.dropSendedState](){
+  [actions.dropSendedState]() {
     return false;
   },
-}, false)
+}, false);
 
-const articlesList = handleActions({
+
+const articlesState = handleActions({
   [actions.postArticleFailure](state, { payload }) {
     return { ...state, errors: payload };
   },
@@ -98,35 +99,32 @@ const articlesList = handleActions({
   [actions.updateArticleSuccess](state, { payload }) {
     return { ...state, article: payload.article, articles: [] };
   },
-  [signInSuccess](state, { payload }) {
-    return {...state, articles: [] }
+  [signInSuccess](state) {
+    return { ...state, articles: [] };
   },
-  [LogOut](state){
-    return {...state, articles: [], article: {}}
+  [LogOut](state) {
+    return { ...state, articles: [], article: {} };
   },
   [actions.getArticleSuccess](state, { payload }) {
-    return {
-      ...state, article: payload, errors: {} }
-      ;
+    return { ...state, article: payload, errors: {} };
   },
-  [actions.getArticleRequest](state){
-    return {...state, article: {}}
+  [actions.getArticleRequest](state) {
+    return { ...state, article: {} };
   },
   [actions.getArticleFailure](state, { payload }) {
-    return { ...state ,errors: { errors: payload }, article: {} };
+    return { ...state, errors: { errors: payload }, article: {} };
   },
   [actions.fetchArticlesListRequest](state) {
-    return {...state}
+    return { ...state };
   },
   [actions.fetchArticlesListSuccess](state, { payload }) {
-
     return {
       ...state,
       articlesCount: payload.articlesCount,
       articles: payload.articles,
       loadedCount: state.loadedCount + payload.articles.length,
       allCount: payload.articlesCount,
-      
+
     };
   },
   [actions.fetchArticlesListFailure](state, { payload }) {
@@ -135,36 +133,36 @@ const articlesList = handleActions({
       errors: payload,
     };
   },
-  [actions.paginationChange](state, {payload}){
-    return {...state, currentPage: payload}
+  [actions.paginationChange](state, { payload }) {
+    return { ...state, currentPage: payload };
   },
   [actions.FavoriteControlSuccess](state, { payload }) {
     const { articles } = state;
     const { slug } = payload;
-    const articleIndex = articles.findIndex((item) => item.slug === slug );
+    const articleIndex = articles.findIndex((item) => item.slug === slug);
     articles[articleIndex] = payload;
     return {
       ...state,
       article: payload,
-      articles
+      articles,
     };
   },
 }, {
-  article: {}, currentPage: 1 ,articles: [], articlesCount: 0, errors: {},
+  article: {}, currentPage: 1, articles: [], articlesCount: 0, errors: {},
 });
 
 
 export default combineReducers({
   updateArticleFetchingState,
-  
+
   favoriteControlState,
-  
+
   PostArticleFetchingState,
   fetchArticlesListState,
   postArticleState,
   ArticleFetchingState,
-  articlesList,
-  
-  
-  sendedState
+  articlesState,
+
+
+  sendedState,
 });

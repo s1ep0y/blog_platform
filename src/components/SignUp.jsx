@@ -6,16 +6,16 @@ import {
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
-import FormMessage from './FormMessage'
-import * as actions from '../actions/user';
 import { useHistory } from 'react-router';
+import FormMessage from './FormMessage';
+import * as actions from '../actions/user';
 
 const SignUp = (props) => {
   const { status, errors, register } = props;
-  
+
   const history = useHistory();
-  
-  if(status === 'finished') history.push('/');
+
+  if (status === 'finished') history.push('/');
 
   const valShema = Yup
     .object()
@@ -53,10 +53,9 @@ const SignUp = (props) => {
     },
   });
 
-  
 
   const signUpForm = () => {
-    const {  touched, handleSubmit } = formik;
+    const { touched, handleSubmit } = formik;
     return (
       <div className="wrapper">
         <Form onFinish={handleSubmit}>
@@ -122,9 +121,9 @@ const actionCreators = {
   register: actions.signUp,
 };
 
-const mapStateToProps = ({ signUpState, SignUpFetchingState }) => {
-  return { status: SignUpFetchingState, errors: signUpState.errors };
-};
+const mapStateToProps = ({ signUpState, SignUpFetchingState }) => (
+  { status: SignUpFetchingState, errors: signUpState.errors }
+);
 
 SignUp.defaultProps = {
   status: '',

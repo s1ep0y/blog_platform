@@ -1,14 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { uniqueId } from 'lodash';
 
 const FormMessage = (status, errors) => {
   switch (status) {
     case 'finished':
-        return null;
-      
+      return null;
+
     case 'failed':
-      console.log(errors)
       return (
         <ul className="errorText">
           { Object.entries(errors).map(([errKey, value]) => (
@@ -20,19 +18,10 @@ const FormMessage = (status, errors) => {
           ))}
         </ul>
       );
-  
+
     default:
-      return null
+      return null;
   }
-}
-
-FormMessage.defaultProps = {
-  errors: {}
-};
-
-FormMessage.propTypes = {
-  errors: PropTypes.objectOf(PropTypes.any),
-  
 };
 
 export default FormMessage;

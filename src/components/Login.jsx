@@ -8,15 +8,17 @@ import { useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import * as actions from '../actions/user';
-import FormMessage from './FormMessage'
+import FormMessage from './FormMessage';
 
 const SignIn = (props) => {
-  const { status, errors, login, loggedIn } = props;
+  const {
+    status, errors, login, loggedIn,
+  } = props;
   const history = useHistory();
-  
-  if(loggedIn) history.push('/');
-  if(status === 'finished') history.push('/');
-  
+
+  if (loggedIn) history.push('/');
+  if (status === 'finished') history.push('/');
+
 
   const valShema = Yup
     .object()
@@ -48,7 +50,7 @@ const SignIn = (props) => {
   });
 
 
-    const loginForm = () => {
+  const loginForm = () => {
     const { touched, handleSubmit } = formik;
     return (
       <div className="wrapper">
@@ -101,18 +103,21 @@ const actionCreators = {
   login: actions.signIn,
 };
 
-const mapStateToProps = ({ userReducers }) => {
-  return { status: userReducers.SignInFetchingState, errors: userReducers.userState.errors, loggedIn: userReducers.userState.loggedIn };
-  
-};
+const mapStateToProps = ({ userReducers }) => ({
+  status: userReducers.SignInFetchingState,
+  errors: userReducers.userState.errors,
+  loggedIn: userReducers.userState.loggedIn,
+});
 
 SignIn.defaultProps = {
+  loggedIn: false,
   status: '',
   errors: {},
   login: () => {},
 };
 
 SignIn.propTypes = {
+  loggedIn: PropTypes.bool,
   status: PropTypes.string,
   errors: PropTypes.objectOf(PropTypes.any),
   login: PropTypes.func,

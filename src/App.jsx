@@ -56,7 +56,7 @@ function App(props) {
 }
 
 const mapStateToProps = ({ articleReducers }) => {
-  const { articles, allCount, loadedCount } = articleReducers.articlesList;
+  const { articles, allCount, loadedCount } = articleReducers.articlesState;
   return {
     articles, allCount, loadedCount
   }

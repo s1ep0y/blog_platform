@@ -22,16 +22,16 @@ export const getArticleRequest = createAction('GET_ARTICLE_REQUEST');
 export const getArticleSuccess = createAction('GET_ARTICLE_SUCCESS');
 export const getArticleFailure = createAction('GET_ARTICLE_FAILURE');
 
-export const dropSendedState = createAction('DROP_SENDED_STATE')
+export const dropSendedState = createAction('DROP_SENDED_STATE');
 
-export const paginationChange = createAction('PAGINATION_CHANGE')
+export const paginationChange = createAction('PAGINATION_CHANGE');
 
 export const paginationControl = (page) => (dispatch) => {
-  dispatch(paginationChange(page))
-}
+  dispatch(paginationChange(page));
+};
 
 export const updateArticle = (article, slug) => async (dispatch, getState) => {
-  const { userReducers: {userState} } = getState();
+  const { userReducers: { userState } } = getState();
   dispatch(updateArticleRequest());
   try {
     const { data } = await axios.put(apiRoutes.oneArticle(slug),
@@ -45,19 +45,19 @@ export const updateArticle = (article, slug) => async (dispatch, getState) => {
 };
 export const getArticle = (slug) => async (dispatch, getState) => {
   dispatch(getArticleRequest());
-  const { userReducers: {userState} } = getState();
+  const { userReducers: { userState } } = getState();
   try {
-    const headers = userState.loggedIn ? { Authorization: `Token ${userState.user.token}`} : {}
-    const { data } = await axios.get(apiRoutes.oneArticle(slug), { headers })
-    dispatch(getArticleSuccess(data.article))
+    const headers = userState.loggedIn ? { Authorization: `Token ${userState.user.token}` } : {};
+    const { data } = await axios.get(apiRoutes.oneArticle(slug), { headers });
+    dispatch(getArticleSuccess(data.article));
   } catch (error) {
-    dispatch(getArticleFailure(error.response.data.errors))
-    console.error(error)
+    dispatch(getArticleFailure(error.response.data.errors));
+    console.error(error);
   }
-}
+};
 
 export const favoriteControl = (slug, favorited) => async (dispatch, getState) => {
-  const { userReducers: {userState} } = getState()
+  const { userReducers: { userState } } = getState();
   dispatch(FavoriteControlRequest());
   try {
     if (favorited) {
@@ -71,14 +71,14 @@ export const favoriteControl = (slug, favorited) => async (dispatch, getState) =
     dispatch(FavoriteControlSuccess(data.article));
     return;
   } catch (error) {
-    dispatch(FavoriteControlFailure(error.response.data.errors))
+    dispatch(FavoriteControlFailure(error.response.data.errors));
     console.error(error);
   }
 };
 
 export const postArticle = (article) => async (dispatch, getState) => {
   dispatch(postArticleRequest());
-  const { userReducers: {userState} } = getState();
+  const { userReducers: { userState } } = getState();
   try {
     const { data } = await axios.post(apiRoutes.articles(),
       { article: { ...article, tagList: article.tagList } },
@@ -87,20 +87,19 @@ export const postArticle = (article) => async (dispatch, getState) => {
   } catch (error) {
     dispatch(postArticleFailure(error.response.data.errors));
     console.error(error);
-    
   }
 };
 
 export const fetchArticles = (params = {}) => async (dispatch, getState) => {
-  const { userReducers: {userState} } = getState();
-  const queries = Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&')
+  const { userReducers: { userState } } = getState();
+  const queries = Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&');
   dispatch(fetchArticlesListRequest());
   try {
-    const headers = userState.loggedIn ? { Authorization: `Token ${userState.user.token}`} : {};
-    const { data } = await axios.get(apiRoutes.articles('?' + queries), {headers});
-    dispatch(fetchArticlesListSuccess(data))
+    const headers = userState.loggedIn ? { Authorization: `Token ${userState.user.token}` } : {};
+    const { data } = await axios.get(apiRoutes.articles(`?${queries}`), { headers });
+    dispatch(fetchArticlesListSuccess(data));
   } catch (error) {
-    console.error(error)
+    console.error(error);
     dispatch(fetchArticlesListFailure(error.response.data.errors));
   }
 };
