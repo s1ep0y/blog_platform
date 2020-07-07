@@ -50,14 +50,14 @@ const userState = handleActions({
 }, { errors: {}, user: {}, loggedIn: false });
 
 
-  const signUpState = handleActions({
-    [actions.signUpSuccess]() {
-      return { status: 'success', errors: {} };
-    },
-    [actions.signUpFailure](state, { payload }) {
-      return { status: 'fail', errors: payload };
-    },
-  }, { status: '', errors: {}, user: {} });
+const signUpState = handleActions({
+  [actions.signUpSuccess]() {
+    return { status: 'success', errors: {} };
+  },
+  [actions.signUpFailure](state, { payload }) {
+    return { status: 'fail', errors: payload };
+  },
+}, { status: '', errors: {}, user: {} });
 
 export default combineReducers({
   userState,

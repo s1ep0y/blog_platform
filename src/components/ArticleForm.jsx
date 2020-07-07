@@ -55,7 +55,7 @@ const ArticleForm = (props) => {
     setTags(tagList.filter((elem) => elem !== val));
   };
 
-  const requiredClass = page === 'edit' ? null : "required"
+  const requiredClass = page === 'edit' ? null : 'required';
 
 
   return (

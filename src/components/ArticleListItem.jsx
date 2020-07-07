@@ -28,7 +28,8 @@ const ArticleListItem = (props) => {
         </p>
         <h3 className="article_list_item__title">{title}</h3>
         <p className="article_list_item__author">
-          By{' '}
+          By
+          {' '}
           {author}
         </p>
       </div>

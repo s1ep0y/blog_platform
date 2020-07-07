@@ -121,9 +121,9 @@ const actionCreators = {
   register: actions.signUp,
 };
 
-const mapStateToProps = ({userReducers}) => {
+const mapStateToProps = ({ userReducers }) => {
   const { signUpState, SignUpFetchingState } = userReducers;
-    return {status: SignUpFetchingState, errors: signUpState.errors}
+  return { status: SignUpFetchingState, errors: signUpState.errors };
 };
 
 SignUp.defaultProps = {
