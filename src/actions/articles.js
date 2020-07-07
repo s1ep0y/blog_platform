@@ -43,6 +43,21 @@ export const updateArticle = (article, slug) => async (dispatch, getState) => {
     console.error(error);
   }
 };
+
+export const postArticle = (article) => async (dispatch, getState) => {
+  dispatch(postArticleRequest());
+  const { userReducers: { userState } } = getState();
+  try {
+    const { data } = await axios.post(apiRoutes.articles(),
+      { article: { ...article, tagList: article.tagList } },
+      { headers: { Authorization: `Token ${userState.user.token}` } });
+    dispatch(postArticleSuccess(data));
+  } catch (error) {
+    dispatch(postArticleFailure(error.response.data.errors));
+    console.error(error);
+  }
+};
+
 export const getArticle = (slug) => async (dispatch, getState) => {
   dispatch(getArticleRequest());
   const { userReducers: { userState } } = getState();
@@ -72,20 +87,6 @@ export const favoriteControl = (slug, favorited) => async (dispatch, getState) =
     return;
   } catch (error) {
     dispatch(FavoriteControlFailure(error.response.data.errors));
-    console.error(error);
-  }
-};
-
-export const postArticle = (article) => async (dispatch, getState) => {
-  dispatch(postArticleRequest());
-  const { userReducers: { userState } } = getState();
-  try {
-    const { data } = await axios.post(apiRoutes.articles(),
-      { article: { ...article, tagList: article.tagList } },
-      { headers: { Authorization: `Token ${userState.user.token}` } });
-    dispatch(postArticleSuccess(data));
-  } catch (error) {
-    dispatch(postArticleFailure(error.response.data.errors));
     console.error(error);
   }
 };

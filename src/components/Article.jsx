@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button, Tag, message,
 } from 'antd';
@@ -23,7 +23,9 @@ const SingleArticle = (props) => {
     favoriteControl,
   } = props;
   const { slug } = useParams();
-  const likeControl = () => (event) => {
+  const [loaded, setLoaded] = useState(false);
+
+  const likeControl = (event) => {
     event.preventDefault();
     if (!loggedIn) {
       message.error('Please login to do it');
@@ -32,14 +34,22 @@ const SingleArticle = (props) => {
     favoriteControl(article.slug, article.favorited);
   };
 
+  useEffect(() => {
+    if (!loaded) {
+      getArticle(slug);
+      setLoaded(true);
+    }
+  }, [loaded, getArticle, slug]);
+
   const EditButton = () => {
     if (username !== article.author.username) {
       return null;
     }
+    const preloadArticle = () => getArticle(article.slug);
     return (
       <Link
         to={`/editarticle/${article.slug}`}
-        onClick={() => getArticle(slug)}
+        onClick={preloadArticle}
         className="single_article__edit"
       >
         <Button>
@@ -48,6 +58,7 @@ const SingleArticle = (props) => {
       </Link>
     );
   };
+
 
   switch (status) {
     case 'none':
@@ -62,11 +73,11 @@ const SingleArticle = (props) => {
             <h2 className="single_article__title">{article.title}</h2>
             <p className="single_article__author">
               By
+              {' '}
               {article.author.username}
             </p>
             <p className="single_article__posted">
               Posted
-              {' '}
               {' '}
               {dateDistance(article.createdAt)}
               {' '}
@@ -75,7 +86,7 @@ const SingleArticle = (props) => {
             {EditButton()}
             <Button
               type="text"
-              onClick={likeControl()}
+              onClick={likeControl}
               className="single_article__like_button"
             >
               <HeartTwoTone
@@ -87,7 +98,7 @@ const SingleArticle = (props) => {
                   : 'lightgrey'}
               />
               {' '}
-              {' '}
+
               {article.favoritesCount}
             </Button>
           </div>

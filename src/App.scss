@@ -18,6 +18,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  width: 400px;
 
   .ant-row {
     display: flex;
@@ -34,6 +35,17 @@
     width: 300px;
   }
 }
+
+.article_form {
+
+  &__tagList {
+    flex-wrap: wrap;
+    display: flex;
+    justify-content: flex-start;
+    max-width: 100%;
+  }
+}
+
 
 .errorText {
   text-align: left;
@@ -52,7 +64,11 @@
   align-self: flex-end;
 }
 
-.requred div label {
+.ant-form-item-label {
+  overflow: visible !important;
+}
+
+.required div label {
 
   &:before {
     left: -6px;
@@ -68,6 +84,7 @@
 }
 
 .article_list_item {
+  word-break: break-all;
   padding: 12px 24px;
   box-shadow: 0px 0px 12px 0px rgba(0,0,0,.2);
   border-radius: 2px;

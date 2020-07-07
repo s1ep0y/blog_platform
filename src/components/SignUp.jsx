@@ -62,7 +62,7 @@ const SignUp = (props) => {
           <Form.Item
             label="Name"
             name="username"
-            className="requred"
+            className="required"
             validateStatus={formik.errors.name && touched.name
               ? 'error'
               : 'success'}
@@ -77,7 +77,7 @@ const SignUp = (props) => {
           <Form.Item
             name="password"
             label="Password"
-            className="requred"
+            className="required"
             validateStatus={formik.errors.password && touched.password
               ? 'error'
               : 'success'}
@@ -90,7 +90,7 @@ const SignUp = (props) => {
           <Form.Item
             name="email"
             label="Email"
-            className="requred"
+            className="required"
             validateStatus={formik.errors.email && touched.email
               ? 'error'
               : 'success'}
@@ -106,7 +106,7 @@ const SignUp = (props) => {
             </Button>
           </Form.Item>
         </Form>
-        {FormMessage(status, 'Sign Up', errors)}
+        {FormMessage(status, errors)}
       </div>
     );
   };
@@ -121,9 +121,10 @@ const actionCreators = {
   register: actions.signUp,
 };
 
-const mapStateToProps = ({ signUpState, SignUpFetchingState }) => (
-  { status: SignUpFetchingState, errors: signUpState.errors }
-);
+const mapStateToProps = ({userReducers}) => {
+  const { signUpState, SignUpFetchingState } = userReducers;
+    return {status: SignUpFetchingState, errors: signUpState.errors}
+};
 
 SignUp.defaultProps = {
   status: '',

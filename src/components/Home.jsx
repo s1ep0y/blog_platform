@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { uniqueId } from 'lodash';
 import {
   Pagination, message,
@@ -21,21 +21,31 @@ const Home = (props) => {
     articlesCount, login, favoriteControl, fetchArticles,
   } = props;
 
+  const [limit, setLimit] = useState(10);
+
   if (fetchArticlesListState === 'requested') {
     return <div><Loading3QuartersOutlined spin style={{ fontSize: 48 }} /></div>;
   }
 
   if (articles.length === 0) {
     fetchArticles({
-      offset: (currentPage - 1) * 10,
+      offset: (currentPage - 1) * limit,
       limit: 10,
     });
   }
 
+  const onShowSizeChange = (current, size) => {
+    setLimit(size);
+    fetchArticles({
+      offset: (current - 1) * size,
+      limit: size,
+    });
+  };
+
   const paginationHandler = (page) => {
     fetchArticles({
-      offset: (page - 1) * 10,
-      limit: 10,
+      offset: (page - 1) * limit,
+      limit,
     });
     paginationControl(page);
   };
@@ -74,9 +84,11 @@ const Home = (props) => {
       {articlesPrepared}
       <Pagination
         total={articlesCount}
-        pageSize={10}
+        pageSize={limit}
         current={currentPage}
+        showSizeChanger
         onChange={paginationHandler}
+        onShowSizeChange={onShowSizeChange}
       />
     </div>
   );
