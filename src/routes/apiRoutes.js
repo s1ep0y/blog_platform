@@ -6,5 +6,4 @@ export default {
   articles: (params = '') => [baseApi, 'articles'].join('/') + params,
   oneArticle: (name) => [baseApi, 'articles', name].join('/'),
   favArticle: (name) => [baseApi, 'articles', name, 'favorite'].join('/'),
-
 };

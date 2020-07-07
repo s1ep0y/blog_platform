@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { uniqueId } from 'lodash';
-import {
-  Pagination, message,
-} from 'antd';
+import { Pagination, message } from 'antd';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
 import * as actions from '../actions/articles';
 import ArticleListItem from './ArticleListItem';
-
 
 const Home = (props) => {
   const {
@@ -18,13 +15,20 @@ const Home = (props) => {
     currentPage,
     articles,
     getArticle,
-    articlesCount, login, favoriteControl, fetchArticles,
+    articlesCount,
+    login,
+    favoriteControl,
+    fetchArticles,
   } = props;
 
   const [limit, setLimit] = useState(10);
 
   if (fetchArticlesListState === 'requested') {
-    return <div><Loading3QuartersOutlined spin style={{ fontSize: 48 }} /></div>;
+    return (
+      <div>
+        <Loading3QuartersOutlined spin style={{ fontSize: 48 }} />
+      </div>
+    );
   }
 
   if (articles.length === 0) {
@@ -50,11 +54,9 @@ const Home = (props) => {
     paginationControl(page);
   };
 
-
   if (fetchArticlesListState === 'failed') {
     return <div>Something went wrong. Please, reload page</div>;
   }
-
 
   const likeControl = (slug, favorited) => (event) => {
     event.preventDefault();
@@ -102,27 +104,18 @@ const actionCreators = {
 };
 
 const mapStateToProps = ({
-  articleReducers:
-  { articlesState, fetchArticlesListState, favoriteControlState },
+  articleReducers: { articlesState, fetchArticlesListState, favoriteControlState },
   userReducers: { userState },
 }) => {
   const { articles, articlesCount, currentPage } = articlesState;
-  if (fetchArticlesListState === 'success') {
-    if (userState.loggedIn) {
-      return {
-        login: true,
-        articles,
-        articlesCount,
-        currentPage,
-        fetchArticlesListState,
-        favoriteControlState,
-      };
-    }
-    return {
-      articles, articlesCount, currentPage, fetchArticlesListState,
-    };
-  }
-  return { fetchArticlesListState, currentPage };
+  return {
+    login: userState.loggedIn,
+    articles,
+    articlesCount,
+    currentPage,
+    fetchArticlesListState,
+    favoriteControlState,
+  };
 };
 
 Home.defaultProps = {

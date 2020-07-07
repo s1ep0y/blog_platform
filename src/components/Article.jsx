@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Button, Tag, message,
-} from 'antd';
+import { Button, Tag, message } from 'antd';
 import { Link, useParams } from 'react-router-dom';
 import { HeartTwoTone } from '@ant-design/icons';
 import { uniqueId } from 'lodash';
@@ -14,14 +12,7 @@ import * as actions from '../actions/articles';
 const dateDistance = (date) => formatDistanceToNow(new Date(date));
 
 const SingleArticle = (props) => {
-  const {
-    status,
-    getArticle,
-    username,
-    article,
-    loggedIn,
-    favoriteControl,
-  } = props;
+  const { status, getArticle, username, article, loggedIn, favoriteControl } = props;
   const { slug } = useParams();
   const [loaded, setLoaded] = useState(false);
 
@@ -52,20 +43,17 @@ const SingleArticle = (props) => {
         onClick={preloadArticle}
         className="single_article__edit"
       >
-        <Button>
-          Edit article
-        </Button>
+        <Button>Edit article</Button>
       </Link>
     );
   };
 
-
   switch (status) {
     case 'none':
       getArticle(slug);
-      return (<div>Wait a bit</div>);
+      return <div>Wait a bit</div>;
     case 'requested':
-      return (<div>A bit more</div>);
+      return <div>A bit more</div>;
     case 'finished':
       return (
         <div className="single_article">
@@ -73,55 +61,34 @@ const SingleArticle = (props) => {
             <h2 className="single_article__title">{article.title}</h2>
             <p className="single_article__author">
               By
-              {' '}
               {article.author.username}
             </p>
             <p className="single_article__posted">
               Posted
-              {' '}
-              {dateDistance(article.createdAt)}
-              {' '}
-              ago
+              {dateDistance(article.createdAt)} ago
             </p>
             {EditButton()}
-            <Button
-              type="text"
-              onClick={likeControl}
-              className="single_article__like_button"
-            >
+            <Button type="text" onClick={likeControl} className="single_article__like_button">
               <HeartTwoTone
                 style={{
                   fontSize: 18,
                 }}
-                twoToneColor={article.favorited
-                  ? 'lightgreen'
-                  : 'lightgrey'}
-              />
-              {' '}
-
+                twoToneColor={article.favorited ? 'lightgreen' : 'lightgrey'}
+              />{' '}
               {article.favoritesCount}
             </Button>
           </div>
           <p className="single_article__body">{article.body}</p>
 
-
           <div className="single_article__tags">
-            {
-                            article
-                              .tagList
-                              .map(
-                                (text) => (
-                                  <Tag key={uniqueId()}>
-                                    {text}
-                                  </Tag>
-                                ),
-                              )
-                        }
+            {article.tagList.map((text) => (
+              <Tag key={uniqueId()}>{text}</Tag>
+            ))}
           </div>
         </div>
       );
     default:
-      return (<div>something went wrong</div>);
+      return <div>something went wrong</div>;
   }
 };
 
@@ -132,10 +99,7 @@ const actionCreators = {
 
 const mapStateToProps = ({
   userReducers,
-  articleReducers: {
-    articlesState,
-    ArticleFetchingState,
-  },
+  articleReducers: { articlesState, ArticleFetchingState },
 }) => {
   const status = ArticleFetchingState;
   const { article } = articlesState;
@@ -146,7 +110,10 @@ const mapStateToProps = ({
   if (status === 'finished') {
     if (loggedIn) {
       return {
-        loggedIn, username: user.username, article, status,
+        loggedIn,
+        username: user.username,
+        article,
+        status,
       };
     }
     return { status, article, loggedIn };

@@ -31,12 +31,16 @@ export const paginationControl = (page) => (dispatch) => {
 };
 
 export const updateArticle = (article, slug) => async (dispatch, getState) => {
-  const { userReducers: { userState } } = getState();
+  const {
+    userReducers: { userState },
+  } = getState();
   dispatch(updateArticleRequest());
   try {
-    const { data } = await axios.put(apiRoutes.oneArticle(slug),
+    const { data } = await axios.put(
+      apiRoutes.oneArticle(slug),
       { article: { ...article, tagList: article.tagList } },
-      { headers: { Authorization: `Token ${userState.user.token}` } });
+      { headers: { Authorization: `Token ${userState.user.token}` } }
+    );
     dispatch(updateArticleSuccess(data));
   } catch (error) {
     dispatch(updateArticleFailure(error.response.data.errors));
@@ -46,11 +50,15 @@ export const updateArticle = (article, slug) => async (dispatch, getState) => {
 
 export const postArticle = (article) => async (dispatch, getState) => {
   dispatch(postArticleRequest());
-  const { userReducers: { userState } } = getState();
+  const {
+    userReducers: { userState },
+  } = getState();
   try {
-    const { data } = await axios.post(apiRoutes.articles(),
+    const { data } = await axios.post(
+      apiRoutes.articles(),
       { article: { ...article, tagList: article.tagList } },
-      { headers: { Authorization: `Token ${userState.user.token}` } });
+      { headers: { Authorization: `Token ${userState.user.token}` } }
+    );
     dispatch(postArticleSuccess(data));
   } catch (error) {
     dispatch(postArticleFailure(error.response.data.errors));
@@ -60,7 +68,9 @@ export const postArticle = (article) => async (dispatch, getState) => {
 
 export const getArticle = (slug) => async (dispatch, getState) => {
   dispatch(getArticleRequest());
-  const { userReducers: { userState } } = getState();
+  const {
+    userReducers: { userState },
+  } = getState();
   try {
     const headers = userState.loggedIn ? { Authorization: `Token ${userState.user.token}` } : {};
     const { data } = await axios.get(apiRoutes.oneArticle(slug), { headers });
@@ -72,7 +82,9 @@ export const getArticle = (slug) => async (dispatch, getState) => {
 };
 
 export const favoriteControl = (slug, favorited) => async (dispatch, getState) => {
-  const { userReducers: { userState } } = getState();
+  const {
+    userReducers: { userState },
+  } = getState();
   dispatch(FavoriteControlRequest());
   try {
     if (favorited) {
@@ -82,7 +94,11 @@ export const favoriteControl = (slug, favorited) => async (dispatch, getState) =
       dispatch(FavoriteControlSuccess(data.article));
       return;
     }
-    const { data } = await axios.post(apiRoutes.favArticle(slug), {}, { headers: { Authorization: `Token ${userState.user.token}` }, data: {} });
+    const { data } = await axios.post(
+      apiRoutes.favArticle(slug),
+      {},
+      { headers: { Authorization: `Token ${userState.user.token}` }, data: {} }
+    );
     dispatch(FavoriteControlSuccess(data.article));
     return;
   } catch (error) {
@@ -92,8 +108,12 @@ export const favoriteControl = (slug, favorited) => async (dispatch, getState) =
 };
 
 export const fetchArticles = (params = {}) => async (dispatch, getState) => {
-  const { userReducers: { userState } } = getState();
-  const queries = Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&');
+  const {
+    userReducers: { userState },
+  } = getState();
+  const queries = Object.entries(params)
+    .map(([key, val]) => `${key}=${val}`)
+    .join('&');
   dispatch(fetchArticlesListRequest());
   try {
     const headers = userState.loggedIn ? { Authorization: `Token ${userState.user.token}` } : {};

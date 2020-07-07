@@ -22,9 +22,7 @@
 
   .ant-row {
     display: flex;
-    justify-content: flex-end;  
-
-    
+    justify-content: flex-end;
   }
   // Вложенность выше двух - ругается линтер. Без указания дочерьности - не перекрыть приоритет родного стиля ant
   .ant-row .ant-form-item-control {
@@ -37,7 +35,6 @@
 }
 
 .article_form {
-
   &__tagList {
     flex-wrap: wrap;
     display: flex;
@@ -45,7 +42,6 @@
     max-width: 100%;
   }
 }
-
 
 .errorText {
   text-align: left;
@@ -69,7 +65,6 @@
 }
 
 .required div label {
-
   &:before {
     left: -6px;
     top: 6px;
@@ -80,18 +75,19 @@
     font-size: 14px;
     font-family: SimSun, sans-serif;
     line-height: 1;
-    content: "*";}
+    content: '*';
+  }
 }
 
 .article_list_item {
   word-break: break-all;
   padding: 12px 24px;
-  box-shadow: 0px 0px 12px 0px rgba(0,0,0,.2);
+  box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.2);
   border-radius: 2px;
   margin-bottom: 24px;
   width: 400px;
   position: relative;
-  color: rgba(0, 0, 0, .65);
+  color: rgba(0, 0, 0, 0.65);
 
   &__body {
     text-align: left;
@@ -103,7 +99,6 @@
     margin: 0;
     flex: 1 0 100%;
     text-align: right;
-    
   }
 
   &__header {
@@ -116,7 +111,7 @@
   &__title {
     margin-bottom: 0;
   }
-  
+
   &__like_Button {
     position: absolute !important;
     bottom: 8px;
@@ -128,7 +123,6 @@
     flex-wrap: wrap;
     display: flex;
     justify-content: flex-start;
-    
   }
 }
 
@@ -139,7 +133,7 @@
 .single_article {
   padding: 24px;
   position: relative;
-  color: rgba(0, 0, 0, .65);
+  color: rgba(0, 0, 0, 0.65);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -161,7 +155,6 @@
 
   &__posted {
     margin: 0;
-    
   }
 
   &__title {
@@ -175,7 +168,7 @@
   &__edit {
     margin-top: 12px;
   }
-  
+
   &__like_button {
     position: absolute !important;
     bottom: 8px;
@@ -187,6 +180,5 @@
     flex-wrap: wrap;
     display: flex;
     justify-content: flex-start;
-    
   }
 }

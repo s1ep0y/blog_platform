@@ -27,15 +27,11 @@ const ArticleFormWrapper = (props) => {
   const { pathname } = useLocation();
   const { slug } = useParams();
 
-
   if (!loggedIn) {
     history.push('/login');
   }
 
-  const page = pathname.includes('/editarticle/')
-    ? 'edit'
-    : 'post';
-
+  const page = pathname.includes('/editarticle/') ? 'edit' : 'post';
 
   const handlePost = (obj) => {
     postArticle(obj);
@@ -45,45 +41,40 @@ const ArticleFormWrapper = (props) => {
     updateArticle(obj, article.slug);
   };
 
-  const formBaseProps = page === 'edit'
-    ? {
-      initialValues: {
-        title: article.title,
-        description: article.description,
-        body: article.body,
-        tag: '',
-      },
-      status: updateArticleFetchingState,
-      validationSchema: Yup
-        .object()
-        .shape({ title: Yup.string(), description: Yup.string(), body: Yup.string() }),
-      action: handleUpdate,
-      tags: article.tagList,
-    }
-    : {
-      initialValues: {
-        title: '',
-        description: '',
-        body: '',
-        tag: '',
-      },
-      status: PostArticleFetchingState,
-      validationSchema: Yup
-        .object()
-        .shape({
-          title: Yup
-            .string()
-            .required('Title is required'),
-          description: Yup
-            .string()
-            .required('description is required'),
-          body: Yup
-            .string()
-            .required('Please enter text of article'),
-        }),
-      action: handlePost,
-      tags: [],
-    };
+  const formBaseProps =
+    page === 'edit'
+      ? {
+          initialValues: {
+            title: article.title,
+            description: article.description,
+            body: article.body,
+            tag: '',
+          },
+          status: updateArticleFetchingState,
+          validationSchema: Yup.object().shape({
+            title: Yup.string(),
+            description: Yup.string(),
+            body: Yup.string(),
+          }),
+          action: handleUpdate,
+          tags: article.tagList,
+        }
+      : {
+          initialValues: {
+            title: '',
+            description: '',
+            body: '',
+            tag: '',
+          },
+          status: PostArticleFetchingState,
+          validationSchema: Yup.object().shape({
+            title: Yup.string().required('Title is required'),
+            description: Yup.string().required('description is required'),
+            body: Yup.string().required('Please enter text of article'),
+          }),
+          action: handlePost,
+          tags: [],
+        };
 
   useEffect(() => {
     if (!loaded) {
@@ -95,14 +86,7 @@ const ArticleFormWrapper = (props) => {
       history.push(`/articles/${article.slug}`);
       dropSendedState();
     }
-  }, [
-    loaded,
-    sendedState,
-    dropSendedState,
-    history,
-    article.slug,
-    formBaseProps,
-  ]);
+  }, [loaded, sendedState, dropSendedState, history, article.slug, formBaseProps]);
 
   if (page === 'edit') {
     if (!loggedIn) {
@@ -143,10 +127,7 @@ const actionCreators = {
   dropSendedState: actions.dropSendedState,
 };
 
-const mapStateToProps = ({
-  userReducers,
-  articleReducers,
-}) => {
+const mapStateToProps = ({ userReducers, articleReducers }) => {
   const {
     articlesState,
     sendedState,
@@ -155,19 +136,16 @@ const mapStateToProps = ({
     PostArticleFetchingState,
   } = articleReducers;
   const { loggedIn, user } = userReducers.userState;
-  if (loggedIn) {
-    return {
-      sendedState,
-      username: user.username,
-      loggedIn,
-      article: articlesState.article,
-      errors: articlesState.errors,
-      ArticleFetchingState,
-      updateArticleFetchingState,
-      PostArticleFetchingState,
-    };
-  }
-  return ({ loggedIn });
+  return {
+    sendedState,
+    username: user.username,
+    loggedIn,
+    article: articlesState.article,
+    errors: articlesState.errors,
+    ArticleFetchingState,
+    updateArticleFetchingState,
+    PostArticleFetchingState,
+  };
 };
 
 ArticleFormWrapper.defaultProps = {

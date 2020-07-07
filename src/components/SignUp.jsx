@@ -1,8 +1,6 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import {
-  Form, Input, Button,
-} from 'antd';
+import { Form, Input, Button } from 'antd';
 import { connect } from 'react-redux';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
@@ -17,22 +15,13 @@ const SignUp = (props) => {
 
   if (status === 'finished') history.push('/');
 
-  const valShema = Yup
-    .object()
-    .shape({
-      username: Yup
-        .string()
-        .max(20, 'Maximum 50 symbols')
-        .required('Please enter your name'),
-      email: Yup
-        .string()
-        .email('Invalid email')
-        .required('Email is required'),
-      password: Yup
-        .string()
-        .min(8, 'Password should be at least 8 symbols long')
-        .required('Please enter your password'),
-    });
+  const valShema = Yup.object().shape({
+    username: Yup.string().max(20, 'Maximum 50 symbols').required('Please enter your name'),
+    email: Yup.string().email('Invalid email').required('Email is required'),
+    password: Yup.string()
+      .min(8, 'Password should be at least 8 symbols long')
+      .required('Please enter your password'),
+  });
 
   const formik = useFormik({
     initialValues: {
@@ -53,7 +42,6 @@ const SignUp = (props) => {
     },
   });
 
-
   const signUpForm = () => {
     const { touched, handleSubmit } = formik;
     return (
@@ -63,27 +51,17 @@ const SignUp = (props) => {
             label="Name"
             name="username"
             className="required"
-            validateStatus={formik.errors.name && touched.name
-              ? 'error'
-              : 'success'}
-            help={formik.errors.name && touched.name
-              ? formik.errors.name
-              : null}
+            validateStatus={formik.errors.name && touched.name ? 'error' : 'success'}
+            help={formik.errors.name && touched.name ? formik.errors.name : null}
           >
-
             <Input onBlur={formik.handleBlur} onChange={formik.handleChange} />
-
           </Form.Item>
           <Form.Item
             name="password"
             label="Password"
             className="required"
-            validateStatus={formik.errors.password && touched.password
-              ? 'error'
-              : 'success'}
-            help={formik.errors.password && touched.password
-              ? formik.errors.password
-              : null}
+            validateStatus={formik.errors.password && touched.password ? 'error' : 'success'}
+            help={formik.errors.password && touched.password ? formik.errors.password : null}
           >
             <Input.Password onBlur={formik.handleBlur} onChange={formik.handleChange} />
           </Form.Item>
@@ -91,12 +69,8 @@ const SignUp = (props) => {
             name="email"
             label="Email"
             className="required"
-            validateStatus={formik.errors.email && touched.email
-              ? 'error'
-              : 'success'}
-            help={formik.errors.email && touched.email
-              ? formik.errors.email
-              : null}
+            validateStatus={formik.errors.email && touched.email ? 'error' : 'success'}
+            help={formik.errors.email && touched.email ? formik.errors.email : null}
           >
             <Input onChange={formik.handleChange} onBlur={formik.handleBlur} />
           </Form.Item>
@@ -111,10 +85,7 @@ const SignUp = (props) => {
     );
   };
 
-
-  return (
-    <div>{signUpForm()}</div>
-  );
+  return <div>{signUpForm()}</div>;
 };
 
 const actionCreators = {

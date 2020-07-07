@@ -9,11 +9,9 @@ const FormMessage = (status, errors) => {
     case 'failed':
       return (
         <ul className="errorText">
-          { Object.entries(errors).map(([errKey, value]) => (
+          {Object.entries(errors).map(([errKey, value]) => (
             <li key={uniqueId()}>
-              {errKey}
-              {' '}
-              {value}
+              {errKey} {value}
             </li>
           ))}
         </ul>
